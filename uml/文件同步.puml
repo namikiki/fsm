@@ -1,0 +1,37 @@
+@startuml
+skinparam responseMessageBelowArrow true
+participant 主客户端   as client
+control     服务器     as server
+entity      同步器   as  sync
+database    数据库     as  db
+database    对象存储    as store
+queue       广播队列    as bqueue
+participant 客户端1 as client1
+participant 客户端2 as client2
+client -> client : 发现文件改变
+client -> server : 发送文件改变请求
+activate server
+server -> sync   : 创建同步文件事务
+activate sync
+sync -> db       : 发送改变记录
+activate db
+db -> db         : 写入记录
+return 返回记录写入结果
+sync -> store    : 发送数据或者被删除文件的id
+activate store
+store -> store   : 保存或者删除文件
+return 返回操作结果
+sync --> server   : 返回同步事务结果
+server -->  client : 返回文件改变处理结果
+deactivate server
+client -> client : 判断响应结果,保存至数据库
+sync -> bqueue  : 发送文件改变的用户id，客户端id和文件信息
+deactivate sync
+activate bqueue
+bqueue -> client1 :
+bqueue -> client2 --:
+'return 返回同步事务结果
+'return 返回文件同步结果
+
+
+@enduml

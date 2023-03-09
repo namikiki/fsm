@@ -1,0 +1,14 @@
+[DataBase]
+DSN = "databse dsn"
+
+
+[Redis]
+Address = "redis.add"
+Password = "redis.passwd"
+
+
+[Minio]
+Endpoint        = "minio.endpoint"
+AccessKeyID     = "minio.accesskey"
+SecretAccessKey = "minio.secretaccesskey"
+UseSSL          = true
