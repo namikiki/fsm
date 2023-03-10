@@ -3,12 +3,15 @@ package user
 import (
 	"context"
 	"errors"
+	"log"
+
+	"fsm/api/req"
 	"fsm/pkg/domain"
 	"fsm/pkg/ent"
 	"fsm/pkg/jwt"
 	"fsm/pkg/salt"
+
 	"github.com/google/uuid"
-	"log"
 )
 
 type Service struct {
@@ -17,7 +20,7 @@ type Service struct {
 	user domain.UserRepository
 }
 
-func NewService(jwt jwt.Service, salt salt.Service, user domain.UserRepository) domain.UserService {
+func NewService(jwt jwt.Service, salt salt.Service, user domain.UserRepository) *Service {
 	return &Service{
 		jwt:  jwt,
 		salt: salt,
@@ -25,23 +28,23 @@ func NewService(jwt jwt.Service, salt salt.Service, user domain.UserRepository) 
 	}
 }
 
-func (s *Service) Login(ctx context.Context, email, reqPassword string) (*ent.User, error) {
+func (s *Service) Login(ctx context.Context, email, password string) (string, string, error) {
 	user, err := s.user.GetByEmail(ctx, email)
 	if err != nil {
-		return nil, err
+		return "", "", err
 	}
 
-	comp := s.ComparePassword(reqPassword, user.Salt, user.PassWord)
+	comp := s.ComparePassword(password, user.Salt, user.PassWord)
 	if !comp {
-		return nil, errors.New("password error")
+		return "", "", errors.New("password error")
 	}
 
-	//token, err := s.jwt.Gen(ctx, user.ID)
-	//if err != nil {
-	//	return nil, "", err
-	//}
+	token, err := s.jwt.Gen(ctx, user.ID)
+	if err != nil {
+		return "", "", err
+	}
 
-	return user, nil
+	return user.ID, token, nil
 }
 
 func (s *Service) ComparePassword(reqPassword string, salt []byte, hashedPassword string) bool {
@@ -49,27 +52,27 @@ func (s *Service) ComparePassword(reqPassword string, salt []byte, hashedPasswor
 	return hashed == hashedPassword
 }
 
-func (s *Service) Register(ctx context.Context, email, password, username string) (*ent.User, error) {
-	if _, err := s.user.GetByEmail(ctx, email); err == nil {
+func (s *Service) Register(ctx context.Context, user req.UserRegister) (*ent.User, error) {
+	if u, _ := s.user.GetByEmail(ctx, user.Email); u.ID != "" {
 		return nil, errors.New("用户已注册")
 	}
 
-	saltStr := s.salt.RandBytesSlice(len(password))
-	hashed := s.salt.Hashed([]byte(password), saltStr)
+	saltStr := s.salt.RandBytesSlice(len(user.PassWord))
+	hashed := s.salt.Hashed([]byte(user.PassWord), saltStr)
 	uid := uuid.New().String()
 
 	u := ent.User{
 		ID:              uid,
-		Email:           email,
+		Email:           user.Email,
 		PassWord:        hashed,
 		Salt:            saltStr,
-		UserName:        username,
+		UserName:        user.UserName,
 		BucketName:      uid,
 		CurrentStoreCap: 0,
 		MaxStoreCap:     1000000,
 	}
 
-	if err := s.user.Store(ctx, u); err != nil {
+	if err := s.user.Create(ctx, u); err != nil {
 		log.Printf("注册失败 %v", err)
 		return nil, err
 	}

@@ -10,3 +10,8 @@ type UserRegister struct {
 	ID       string
 	Token    string
 }
+
+type Login struct {
+	Token  string `json:"token"`
+	UserID string `json:"user_id"`
+}

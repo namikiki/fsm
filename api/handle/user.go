@@ -2,12 +2,13 @@ package handle
 
 import (
 	"log"
+	"net/http"
 
 	"fsm/api/req"
 	"fsm/api/res"
-	"fsm/pkg/domain"
 	"fsm/pkg/sync"
 	"fsm/pkg/types"
+	"fsm/pkg/user"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -17,18 +18,18 @@ import (
 )
 
 type User struct {
-	domain.UserService
 	V    *validator.Validate
 	mio  *minio.Client
-	sync *sync.Syncer
+	Sync *sync.Syncer
+	User *user.Service
 }
 
-func NewUser(dus domain.UserService, v *validator.Validate, mio *minio.Client, sync *sync.Syncer) User {
+func NewUser(v *validator.Validate, mio *minio.Client, sync *sync.Syncer, user *user.Service) User {
 	return User{
-		UserService: dus,
-		V:           v,
-		mio:         mio,
-		sync:        sync,
+		V:    v,
+		mio:  mio,
+		Sync: sync,
+		User: user,
 	}
 }
 
@@ -40,86 +41,97 @@ var upgrader = websocket.Upgrader{
 func (u *User) WebsocketConn(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, err.Error()))
+		return
 	}
 
-	client := types.SyncClient{
-		UserID:   c.Query("uid"),
-		ClientID: c.Query("cid"),
+	user := c.Param("user")
+	client := c.Param("client")
+	if user == "" || client == "" {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, err.Error()))
+		return
+	}
+
+	wsClient := types.SyncClient{
+		UserID:   user,
+		ClientID: client,
 		Conn:     conn,
 	}
 
-	u.sync.WebsocketConnChannel <- client
+	u.Sync.WebsocketConnChannel <- wsClient
 }
 
 func (u *User) Register(c *gin.Context) {
-	session := sessions.Default(c)
+	//session := sessions.Default(c)
 	var ur req.UserRegister
 	if err := c.ShouldBind(&ur); err != nil {
-		log.Println("bind err") //数据类型错误
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
 		return
 	}
 
 	if err := u.V.Struct(ur); err != nil {
-		log.Println("vali err") //数据不能为空
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
 		return
 	}
 
-	user, err := u.UserService.Register(c, ur.Email, ur.PassWord, ur.UserName)
+	uu, err := u.User.Register(c, ur)
 	if err != nil {
-		log.Println("store err") //数据不能为空
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "注册用户失败"))
 		return
 	}
 
-	if err := u.mio.MakeBucket(c, user.ID, minio.MakeBucketOptions{ObjectLocking: false}); err != nil {
-		log.Printf("init user minio :%v", err)
+	if err := u.mio.MakeBucket(c, uu.ID, minio.MakeBucketOptions{ObjectLocking: false}); err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "创建用户存储失败"))
 		return
 	}
 
-	if err := u.mio.EnableVersioning(c, user.ID); err != nil {
-		log.Printf("init user minio :%v", err)
-		return
-	}
+	c.AbortWithStatusJSON(http.StatusOK, "注册成功")
 
-	session.Set("userid", user.ID)
-	session.Save()
-
-	c.JSON(200, gin.H{
-		"code": 100,
-		"data": res.UserLogin{
-			Uid: user.ID,
-		}})
+	//if err := u.mio.EnableVersioning(c, user.ID); err != nil {
+	//	log.Printf("init user minio :%v", err)
+	//	return
+	//}
+	//session.Set("userid", user.ID)
+	//session.Save()
 
 }
 
 func (u *User) Login(c *gin.Context) {
-	session := sessions.Default(c)
-	var ulogin req.UserLogin
+	//session := sessions.Default(c)
+	var userLogin req.UserLogin
 
-	if err := c.ShouldBind(&ulogin); err != nil {
+	if err := c.ShouldBind(&userLogin); err != nil {
 		log.Println("bind err")
 		return
 	}
 
-	log.Println(ulogin)
+	log.Println(userLogin)
 
-	if err := u.V.Struct(ulogin); err != nil {
+	if err := u.V.Struct(userLogin); err != nil {
 		log.Println("vali err")
 		return
 	}
 
-	user, err := u.UserService.Login(c, ulogin.Email, ulogin.PassWord)
+	userID, token, err := u.User.Login(c, userLogin.Email, userLogin.PassWord)
 	if err != nil {
-		log.Printf("Login err %v", err)
 		return
 	}
 
-	session.Set("userid", user.ID)
-	session.Save()
+	log.Println(userID, token)
 
-	c.JSON(200, gin.H{
-		"uid": user.ID,
-	})
+	c.AbortWithStatusJSON(http.StatusOK, NewApiResult(200, "登录成功", res.Login{
+		Token:  token,
+		UserID: userID,
+	}))
+
+	//userLogin, err := u.UserService.Login(c, userLogin.Email, userLogin.PassWord)
+	//if err != nil {
+	//	log.Printf("Login err %v", err)
+	//	return
+	//}
+	//
+	//session.Set("userid", userLogin.ID)
+	//session.Save()
 }
 
 func (u *User) Delete(c *gin.Context) {

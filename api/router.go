@@ -15,7 +15,7 @@ func AddRouters(app *gin.Engine, user handle.User, file handle.File, dir handle.
 	store := cookie.NewStore([]byte("secret"))
 
 	app.Use(common.VerifyUserToken())
-	
+
 	app.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Not Found"})
 	})
@@ -23,6 +23,10 @@ func AddRouters(app *gin.Engine, user handle.User, file handle.File, dir handle.
 	// test route
 	{
 		app.GET("/test", func(c *gin.Context) {
+			auth := c.Request.Header.Get("Authorization")
+			client := c.Request.Header.Get("Client")
+			log.Println(auth, client)
+
 			code := c.Query("testcode")
 			if code == "123" {
 				c.AbortWithStatusJSON(http.StatusOK, "success")
@@ -40,7 +44,7 @@ func AddRouters(app *gin.Engine, user handle.User, file handle.File, dir handle.
 		app.GET("/file/open/:fileID", file.Open)
 		app.GET("/file/getMetadata", file.GetMetadata)
 		app.POST("/file/create", file.Create)
-		app.GET("/file/get/all/bySyncID", file.GetAllFileBySyncID)
+		app.GET("/file/get/all/bySyncID/:syncID", file.GetAllFileBySyncID)
 	}
 
 	// dir
@@ -49,7 +53,7 @@ func AddRouters(app *gin.Engine, user handle.User, file handle.File, dir handle.
 		app.GET("/dir/delete", dir.Delete)
 		app.GET("/dir/read", dir.ReadDir)
 		app.GET("/dir/getAllDirByPath", dir.GetAllDirByPath)
-		app.GET("/dir/getAllDirBySyncID", dir.GetAllDirBySyncID)
+		app.GET("/dir/getAllDirBySyncID/:syncID", dir.GetAllDirBySyncID)
 	}
 
 	//syncTask
@@ -61,7 +65,7 @@ func AddRouters(app *gin.Engine, user handle.User, file handle.File, dir handle.
 	}
 
 	app.Use(sessions.Sessions("sessionId", store))
-	app.GET("/websocketconn", user.WebsocketConn)
+	app.GET("/websocket/connect/:user/:client", user.WebsocketConn)
 
 	app.POST("/login", user.Login)
 	app.POST("/register", user.Register)

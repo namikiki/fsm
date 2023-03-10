@@ -113,7 +113,13 @@ func (d *Dir) GetAllDirByPath(c *gin.Context) {
 }
 
 func (d *Dir) GetAllDirBySyncID(c *gin.Context) {
-	if dirs, err := d.D.WalkDirBySyncID(c, "xyn233", "sync1"); err == nil {
+	syncID := c.Param("syncID")
+	if syncID == "" {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
+		return
+	}
+
+	if dirs, err := d.D.WalkDirBySyncID(c, "xyn233", syncID); err == nil {
 		c.AbortWithStatusJSON(http.StatusOK, dirs)
 		return
 	}

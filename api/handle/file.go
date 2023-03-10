@@ -168,7 +168,13 @@ func (f *File) Open(c *gin.Context) {
 }
 
 func (f *File) GetAllFileBySyncID(c *gin.Context) {
-	if files, err := f.F.GetAllBySyncID(c, "xyn233", "sync1"); err == nil {
+	syncID := c.Param("syncID")
+	if syncID == "" {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
+		return
+	}
+
+	if files, err := f.F.GetAllBySyncID(c, "xyn233", syncID); err == nil {
 		c.AbortWithStatusJSON(http.StatusOK, files)
 		return
 	}

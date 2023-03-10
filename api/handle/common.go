@@ -1,6 +1,9 @@
 package handle
 
 import (
+	"net/http"
+
+	"fsm/api/consts"
 	"fsm/pkg/domain"
 	"fsm/pkg/jwt"
 
@@ -19,22 +22,19 @@ func NewCommon(jwt jwt.Service, user domain.UserRepository) Common {
 func (com *Common) VerifyUserToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		//token := c.Request.Header.Get(consts.Authorization)
-		//if token == "" {
-		//	c.AbortWithStatusJSON(200, gin.H{
-		//		"msg": "请登陆后重试",
-		//	})
-		//	return
-		//}
-		//
-		//uid, err := com.jwt.Parse(c, token)
-		//if err != nil {
-		//	c.AbortWithStatusJSON(200, gin.H{
-		//		"msg": "请登陆后重试",
-		//	})
-		//	return
-		//}
-		//
+		var token string
+		if token = c.Request.Header.Get(consts.Authorization); token == "" {
+			c.AbortWithStatusJSON(http.StatusOK, NewApiResult(501, "获取JWT失败", nil))
+			return
+		}
+
+		uid, err := com.jwt.Parse(c, token)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusOK, NewApiResult(501, "JWT 解析失败", nil))
+			return
+		}
+
+		c.Keys["userId"] = uid
 		//user, err := com.user.GetByID(c, uid)
 		//if err != nil {
 		//	c.AbortWithStatusJSON(200, gin.H{
@@ -42,7 +42,5 @@ func (com *Common) VerifyUserToken() gin.HandlerFunc {
 		//	})
 		//	return
 		//}
-		//
-		//c.Set("user", user)
 	}
 }

@@ -7,13 +7,12 @@ type ApiResult struct {
 }
 
 // NewApiResult create an instance of the ApiResult
-func NewApiResult(code int, message string, data any) ApiResult {
-	r := ApiResult{
+func NewApiResult(code int, message string, data interface{}) ApiResult {
+	return ApiResult{
 		Code:    code,
 		Message: message,
 		Data:    data,
 	}
-	return r
 }
 
 // NewErrorApiResult create an instance of the ApiResult that contains error info
