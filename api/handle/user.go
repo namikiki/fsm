@@ -1,6 +1,7 @@
 package handle
 
 import (
+	"log"
 	"net/http"
 
 	"fsm/api/req"
@@ -113,10 +114,18 @@ func (u *User) Login(c *gin.Context) {
 		return
 	}
 
-	c.AbortWithStatusJSON(http.StatusOK, NewApiResult(200, "登录成功", res.Login{
+	log.Println(userID)
+	log.Println(token)
+
+	c.JSON(http.StatusOK, NewApiJsonResult(200, "登录成功", res.Login{
 		Token:  token,
 		UserID: userID,
 	}))
+	//c.
+	//	c.JSON(http.StatusOK, NewApiResult(200, "登录成功", res.Login{
+	//	Token:  token,
+	//	UserID: userID,
+	//}))
 
 	//session.Set("userid", userLogin.ID)
 	//session.Save()

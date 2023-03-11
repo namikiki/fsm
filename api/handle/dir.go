@@ -42,7 +42,7 @@ func (d *Dir) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, NewApiResult(201, "创建文件夹成功", dir))
+	c.JSON(http.StatusOK, NewApiJsonResult(201, "创建文件夹成功", dir))
 }
 
 func (d *Dir) Delete(c *gin.Context) {
@@ -60,7 +60,7 @@ func (d *Dir) Delete(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "删除目录失败"))
 		return
 	}
-	c.JSON(http.StatusOK, NewApiResult(201, "删除文件夹成功", nil))
+	c.JSON(http.StatusOK, NewApiJsonResult(201, "删除文件夹成功", nil))
 }
 
 // todo
@@ -82,6 +82,7 @@ func (d *Dir) ReadDir(c *gin.Context) {
 	c.JSON(200, readDir)
 }
 
+// GetAllDirByPath todo
 func (d *Dir) GetAllDirByPath(c *gin.Context) {
 
 	dir := ent.Dir{ID: "123",
@@ -110,7 +111,7 @@ func (d *Dir) GetAllDirBySyncID(c *gin.Context) {
 	}
 
 	if dirs, err := d.D.WalkDirBySyncID(c, userID, syncID); err == nil {
-		c.AbortWithStatusJSON(http.StatusOK, NewApiResult(201, "获取所有文件夹信息成功", dirs))
+		c.JSON(http.StatusOK, NewApiJsonResult(201, "获取所有文件夹信息成功", dirs))
 		return
 	}
 	c.JSON(http.StatusOK, NewErrorApiResult(501, "获取syncID下所有文件夹信息失败"))

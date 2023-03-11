@@ -30,11 +30,6 @@ func NewFile(f domain.FileRepository, s *sync.Syncer, fs domain.FileStorageServi
 
 func (f *File) Create(c *gin.Context) {
 
-	//if err := f.V.Struct(fs); err != nil {
-	//	log.Printf("val %v", err)
-	//	return
-	//}
-
 	var file ent.File
 	if err := c.ShouldBindQuery(&file); err != nil {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
