@@ -5,27 +5,28 @@ import (
 	"net/http"
 
 	"fsm/api/handle"
+	"fsm/pkg/types"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
-func AddRouters(app *gin.Engine, user handle.User, file handle.File, dir handle.Dir, syncTask handle.SyncTask, common handle.Common) {
-	store := cookie.NewStore([]byte("secret"))
+func AddRouters(router *gin.Engine, user handle.User, file handle.File, dir handle.Dir, syncTask handle.SyncTask, common handle.Common) {
+	//store := cookie.NewStore([]byte("secret"))
+	//app.Use(sessions.Sessions("sessionId", store))
 
-	app.Use(common.VerifyUserToken())
-
-	app.NoRoute(func(c *gin.Context) {
+	router.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Not Found"})
 	})
 
-	// test route
-	{
+	app := router.Group("")
+	app.Use(common.VerifyUserToken())
+
+	{ // test route
 		app.GET("/test", func(c *gin.Context) {
-			auth := c.Request.Header.Get("Authorization")
-			client := c.Request.Header.Get("Client")
-			log.Println(auth, client)
+
+			log.Println("auth", c.Request.Header.Get("authorization"))
+			log.Println("userid", c.Request.Header.Get("userID"))
+			log.Println("clientID", c.Request.Header.Get("clientID"))
 
 			code := c.Query("testcode")
 			if code == "123" {
@@ -36,19 +37,16 @@ func AddRouters(app *gin.Engine, user handle.User, file handle.File, dir handle.
 			}
 			log.Println("不应该执行")
 		})
-
 	}
 
-	// file
-	{
+	{ // file
 		app.GET("/file/open/:fileID", file.Open)
 		app.GET("/file/getMetadata", file.GetMetadata)
 		app.POST("/file/create", file.Create)
 		app.GET("/file/get/all/bySyncID/:syncID", file.GetAllFileBySyncID)
 	}
 
-	// dir
-	{
+	{ // dir
 		app.POST("/dir/create", dir.Create)
 		app.GET("/dir/delete", dir.Delete)
 		app.GET("/dir/read", dir.ReadDir)
@@ -56,20 +54,26 @@ func AddRouters(app *gin.Engine, user handle.User, file handle.File, dir handle.
 		app.GET("/dir/getAllDirBySyncID/:syncID", dir.GetAllDirBySyncID)
 	}
 
-	//syncTask
-	{
+	{ //syncTask
 		app.POST("/synctask/create", syncTask.Create)
-		app.GET("/synctask/delete", syncTask.Delete)
-		app.GET("/synctask/get", syncTask.Get)
+		app.GET("/synctask/delete/:syncID", syncTask.Delete)
+		app.GET("/synctask/get/:syncID", syncTask.Get)
 		app.GET("/synctask/getAll", syncTask.GetAll)
 	}
 
-	app.Use(sessions.Sessions("sessionId", store))
-	app.GET("/websocket/connect/:user/:client", user.WebsocketConn)
+	router.GET("/websocket/connect/:user/:client", user.WebsocketConn)
 
-	app.POST("/login", user.Login)
-	app.POST("/register", user.Register)
+	router.POST("/login", user.Login)
+	router.POST("/register", user.Register)
 	app.GET("/delete", user.Delete)
 
 	app.POST("/filestore", file.Create)
+}
+
+func New(conf *types.Config) *gin.Engine {
+	if conf.Develop.DevMod {
+		return gin.Default()
+	}
+	gin.SetMode(gin.ReleaseMode)
+	return gin.New()
 }

@@ -10,7 +10,7 @@ import (
 )
 
 type FileRepository interface {
-	Create(ctx context.Context, f ent.File) error
+	Create(ctx context.Context, f *ent.File) error
 	Delete(ctx context.Context, f ent.File) error
 	GetMetadataByID(ctx context.Context, userID, syncID, fileID string) (ent.File, error)
 	Update(ctx context.Context, f ent.File) error

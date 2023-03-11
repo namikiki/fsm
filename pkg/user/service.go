@@ -47,6 +47,23 @@ func (s *Service) Login(ctx context.Context, email, password string) (string, st
 	return user.ID, token, nil
 }
 
+func (s *Service) UpdatePassword(ctx context.Context, up req.UpdatePassword) error {
+	user, err := s.user.GetByEmail(ctx, up.Email)
+	if err != nil {
+		return err
+	}
+
+	if comp := s.ComparePassword(up.OldPassword, user.Salt, user.PassWord); !comp {
+		return errors.New("password error")
+	}
+
+	user.Salt = s.salt.RandBytesSlice(len(user.PassWord))
+	user.PassWord = s.salt.Hashed([]byte(user.PassWord), user.Salt)
+
+	return s.user.UpdatePassword(ctx, *user)
+
+}
+
 func (s *Service) ComparePassword(reqPassword string, salt []byte, hashedPassword string) bool {
 	hashed := s.salt.Hashed([]byte(reqPassword), salt)
 	return hashed == hashedPassword
@@ -76,10 +93,5 @@ func (s *Service) Register(ctx context.Context, user req.UserRegister) (*ent.Use
 		log.Printf("注册失败 %v", err)
 		return nil, err
 	}
-
-	//token, err := s.jwt.Gen(ctx, u.ID)
-	//if err != nil {
-	//	return nil, errors.New("生成token失败")
-	//}
 	return &u, nil
 }

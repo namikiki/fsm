@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 )
 
@@ -19,10 +20,10 @@ type Syncer struct {
 	WebsocketConnChannel chan types.SyncClient
 	FR                   domain.FileRepository
 	Min                  *minio.Client
-	ST                   domain.SyncTask
+	ST                   domain.SyncTaskRepository
 }
 
-func NewSyncer(dr domain.DirRepository, rc *redis.Client, fr domain.FileRepository, min *minio.Client, st domain.SyncTask) *Syncer {
+func NewSyncer(dr domain.DirRepository, rc *redis.Client, fr domain.FileRepository, min *minio.Client, st domain.SyncTaskRepository) *Syncer {
 	return &Syncer{
 		ST:                   st,
 		DR:                   dr,
@@ -33,16 +34,19 @@ func NewSyncer(dr domain.DirRepository, rc *redis.Client, fr domain.FileReposito
 	}
 }
 
-func (s *Syncer) FileCreate(c *gin.Context, file ent.File, ClientID string) (*ent.File, error) {
+func (s *Syncer) FileCreate(c *gin.Context, file *ent.File, ClientID string) error {
 
-	object, err := s.Min.PutObject(c, file.UserID, file.ID, c.Request.Body, c.Request.ContentLength, minio.PutObjectOptions{ContentType: "application/octet-stream"})
+	file.ID = uuid.New().String()
+	object, err := s.Min.PutObject(c, file.UserID, file.ID, c.Request.Body, c.Request.ContentLength,
+		minio.PutObjectOptions{ContentType: "application/octet-stream"})
 	if err != nil {
-		return nil, err
+		return err
 	}
+
 	file.Hash = object.ETag
 
 	if err := s.FR.Create(c, file); err != nil {
-		return nil, err
+		return err
 	}
 
 	marshal, err := json.Marshal(types.PubSubMessage{
@@ -52,7 +56,7 @@ func (s *Syncer) FileCreate(c *gin.Context, file ent.File, ClientID string) (*en
 		Data:     file,
 	})
 	s.Redis.Publish(c, file.UserID, marshal)
-	return &file, err
+	return err
 }
 
 func (s *Syncer) FileDelete(c *gin.Context, f ent.File, ClientID string) error {
@@ -73,7 +77,6 @@ func (s *Syncer) FileDelete(c *gin.Context, f ent.File, ClientID string) error {
 	})
 	s.Redis.Publish(c, f.UserID, marshal)
 	return err
-
 }
 
 func (s *Syncer) FileUpdate(c *gin.Context, file ent.File, ClientID string) error {
@@ -110,9 +113,10 @@ func (s *Syncer) FileUpdate(c *gin.Context, file ent.File, ClientID string) erro
 	return err
 }
 
-func (s *Syncer) DirCreate(c *gin.Context, dir ent.Dir, ClientID string) error {
+func (s *Syncer) DirCreate(c *gin.Context, dir *ent.Dir, ClientID string) error {
 
-	if err := s.DR.Create(c, dir); err != nil {
+	dir.ID = uuid.New().String()
+	if err := s.DR.Create(c, *dir); err != nil {
 		return err
 	}
 
@@ -143,8 +147,10 @@ func (s *Syncer) DirDelete(c *gin.Context, dir ent.Dir, ClientID string) error {
 	return err
 }
 
-func (s *Syncer) SyncTaskCreate(c *gin.Context, st ent.SyncTask, ClientID string) error {
-	if err := s.ST.Create(st); err != nil {
+func (s *Syncer) SyncTaskCreate(c *gin.Context, syncTask *ent.SyncTask, ClientID string) error {
+
+	syncTask.ID = uuid.New().String()
+	if err := s.ST.Create(*syncTask); err != nil {
 		return err
 	}
 
@@ -152,9 +158,10 @@ func (s *Syncer) SyncTaskCreate(c *gin.Context, st ent.SyncTask, ClientID string
 		Type:     "syncTask",
 		Action:   "create",
 		ClientID: ClientID,
-		Data:     st,
+		Data:     syncTask,
 	})
-	s.Redis.Publish(c, st.UserID, marshal)
+
+	s.Redis.Publish(c, syncTask.UserID, marshal)
 	return err
 
 }

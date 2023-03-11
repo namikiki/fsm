@@ -22,14 +22,19 @@ func (u *UserRepository) Create(ctx context.Context, user ent.User) error {
 	return nil
 }
 
-func (u *UserRepository) GetByEmail(ctx context.Context, email string) (ent.User, error) {
+func (u *UserRepository) GetByEmail(ctx context.Context, email string) (*ent.User, error) {
 	var user ent.User
 	u.Conn.Where("email = ?", email).Find(&user)
-	return user, nil
+	return &user, nil
 }
 
-func (u *UserRepository) GetByID(ctx context.Context, uid string) (ent.User, error) {
+func (u *UserRepository) GetByID(ctx context.Context, uid string) (*ent.User, error) {
 	var user ent.User
 	u.Conn.Where("id = ?", uid).Find(&user)
-	return user, nil
+	return &user, nil
+}
+
+func (u *UserRepository) UpdatePassword(ctx context.Context, user ent.User) error {
+	u.Conn.Save(&user)
+	return nil
 }

@@ -10,3 +10,9 @@ type UserRegister struct {
 	PassWord string `json:"password,omitempty" validate:"required,min=10"`
 	UserName string `json:"username,omitempty" validate:"required,min=5"`
 }
+
+type UpdatePassword struct {
+	Email       string `json:"email" validate:"required"`
+	OldPassword string `json:"old_password" validate:"required"`
+	NewPassword string `json:"new_password" validate:"required"`
+}

@@ -4,6 +4,11 @@ type Config struct {
 	DataBase DataBase
 	Redis    Redis
 	Minio    MinIO
+	Develop  Develop
+}
+
+type Develop struct {
+	DevMod bool
 }
 
 type DataBase struct {

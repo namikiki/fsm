@@ -24,8 +24,8 @@ func (fr *FileRepository) GetMetadataByID(ctx context.Context, userID, syncID, f
 	return f, nil
 }
 
-func (fr *FileRepository) Create(ctx context.Context, f ent.File) error {
-	fr.Conn.Create(&f)
+func (fr *FileRepository) Create(ctx context.Context, f *ent.File) error {
+	fr.Conn.Create(f)
 	return nil
 }
 

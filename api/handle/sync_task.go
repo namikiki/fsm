@@ -1,55 +1,74 @@
 package handle
 
 import (
-	"log"
 	"net/http"
 
 	"fsm/pkg/domain"
 	"fsm/pkg/ent"
+	"fsm/pkg/sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type SyncTask struct {
-	ST domain.SyncTask
+	ST domain.SyncTaskRepository
+	S  *sync.Syncer
 }
 
-func NewSyncTask(st domain.SyncTask) SyncTask {
-	return SyncTask{ST: st}
+func NewSyncTask(st domain.SyncTaskRepository, s *sync.Syncer) SyncTask {
+	return SyncTask{
+		ST: st,
+		S:  s,
+	}
 }
 
 func (i *SyncTask) Create(c *gin.Context) {
 
-	var st ent.SyncTask
-	st.ID = uuid.New().String()
-
-	if err := c.ShouldBindJSON(&st); err != nil {
+	var syncTask ent.SyncTask
+	if err := c.ShouldBindJSON(&syncTask); err != nil {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
 		return
 	}
 
-	log.Println(st)
+	clientID := c.GetHeader("clientID")
+	syncTask.UserID = c.GetHeader("userID")
 
-	if err := i.ST.Create(st); err != nil {
+	if err := i.S.SyncTaskCreate(c, &syncTask, clientID); err != nil {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "创建同步任务失败"))
 		return
 	}
-	c.AbortWithStatusJSON(http.StatusOK, st)
+	c.JSON(http.StatusOK, NewApiResult(201, "创建同步任务成功", syncTask))
 }
 
+// Delete todo 文件和文件夹删除
 func (i *SyncTask) Delete(c *gin.Context) {
 
-	if err := i.ST.Delete("xyn233", "sync1"); err != nil {
+	clientID := c.GetHeader("clientID")
+	userID := c.GetHeader("userID")
+	syncID := c.Param("syncID")
+	if syncID == "" {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
+		return
+	}
+
+	if err := i.S.SyncTaskDelete(c, userID, syncID, clientID); err != nil {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "删除同步人物失败"))
 		return
 	}
-	c.AbortWithStatusJSON(http.StatusOK, nil)
+	c.AbortWithStatusJSON(http.StatusOK, NewApiResult(201, "删除同步任务成功", nil))
 }
 
 func (i *SyncTask) Get(c *gin.Context) {
+
+	userID := c.GetHeader("userID")
+	syncID := c.Param("syncID")
+	if syncID == "" {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
+		return
+	}
+
 	var syncTask ent.SyncTask
-	if syncTask = i.ST.Get("xyn233", "sync1"); syncTask.ID == "" {
+	if syncTask = i.ST.Get(userID, syncID); syncTask.ID == "" {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "获取同步任务失败"))
 		return
 	}
@@ -57,9 +76,10 @@ func (i *SyncTask) Get(c *gin.Context) {
 }
 
 func (i *SyncTask) GetAll(c *gin.Context) {
-	if syncTasks, err := i.ST.GetAll("xyn233"); err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, syncTasks)
+
+	if syncTasks, err := i.ST.GetAll(c.GetHeader("userID")); err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewApiResult(201, "获取所有的同步任务成功", syncTasks))
 		return
 	}
-	c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "获取失败"))
+	c.JSON(http.StatusOK, NewErrorApiResult(501, "获取失败"))
 }

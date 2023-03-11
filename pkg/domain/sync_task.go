@@ -2,7 +2,7 @@ package domain
 
 import "fsm/pkg/ent"
 
-type SyncTask interface {
+type SyncTaskRepository interface {
 	Create(sync ent.SyncTask) error
 	Delete(userID, syncID string) error
 	Get(userID, syncID string) ent.SyncTask

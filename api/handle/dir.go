@@ -10,7 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 )
 
 type Dir struct {
@@ -35,46 +34,36 @@ func (d *Dir) Create(c *gin.Context) {
 		return
 	}
 
-	dir.ID = uuid.New().String()
-	dir.UserID = "xyn233"
-	clientID := c.Request.Header.Get("client")
-	if clientID == "" {
-		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
-		return
-	}
+	clientID := c.GetHeader("clientID")
+	dir.UserID = c.GetHeader("userID")
 
-	if err := d.S.DirCreate(c, dir, clientID); err != nil {
+	if err := d.S.DirCreate(c, &dir, clientID); err != nil {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "创建目录失败"))
 		return
 	}
 
-	//NewApiResult(201, "成功", dir)
-	c.AbortWithStatusJSON(http.StatusOK, dir)
+	c.JSON(http.StatusOK, NewApiResult(201, "创建文件夹成功", dir))
 }
 
 func (d *Dir) Delete(c *gin.Context) {
-	//var dirs ent.Dir
-	//if err := c.Bind(&dirs); err != nil {
-	//	c.JSON(400, "fail")
-	//}
-	clientID := c.Query("client_id")
-	dir := ent.Dir{ID: c.Query("id"),
-		UserID:     "user1",
-		SyncID:     "sync1",
-		Dir:        uuid.New().String(),
-		Level:      0,
-		Deleted:    false,
-		CreateTime: time.Now(),
-		ModTime:    time.Now(),
-	}
 
-	if err := d.S.DirDelete(c, dir, clientID); err != nil {
-		c.JSON(400, "fail")
+	var dir ent.Dir
+	if err := c.ShouldBindJSON(&dir); err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
 		return
 	}
-	c.JSON(200, "success")
+
+	clientID := c.GetHeader("clientID")
+	dir.UserID = c.GetHeader("userID")
+
+	if err := d.S.DirDelete(c, dir, clientID); err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "删除目录失败"))
+		return
+	}
+	c.JSON(http.StatusOK, NewApiResult(201, "删除文件夹成功", nil))
 }
 
+// todo
 func (d *Dir) ReadDir(c *gin.Context) {
 	dir := ent.Dir{ID: "123",
 		UserID:     "user1",
@@ -113,15 +102,16 @@ func (d *Dir) GetAllDirByPath(c *gin.Context) {
 }
 
 func (d *Dir) GetAllDirBySyncID(c *gin.Context) {
+	userID := c.GetHeader("userID")
 	syncID := c.Param("syncID")
 	if syncID == "" {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
 		return
 	}
 
-	if dirs, err := d.D.WalkDirBySyncID(c, "xyn233", syncID); err == nil {
-		c.AbortWithStatusJSON(http.StatusOK, dirs)
+	if dirs, err := d.D.WalkDirBySyncID(c, userID, syncID); err == nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewApiResult(201, "获取所有文件夹信息成功", dirs))
 		return
 	}
-	c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "获取syncID下所有文件夹失败"))
+	c.JSON(http.StatusOK, NewErrorApiResult(501, "获取syncID下所有文件夹信息失败"))
 }

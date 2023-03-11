@@ -1,6 +1,7 @@
 package handle
 
 import (
+	"log"
 	"net/http"
 
 	"fsm/api/consts"
@@ -22,9 +23,12 @@ func NewCommon(jwt jwt.Service, user domain.UserRepository) Common {
 func (com *Common) VerifyUserToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		var token string
-		if token = c.Request.Header.Get(consts.Authorization); token == "" {
-			c.AbortWithStatusJSON(http.StatusOK, NewApiResult(501, "获取JWT失败", nil))
+		log.Println(c.Request.Header.Get(consts.Authorization))
+		log.Println(c.Request.Header.Get(consts.Client))
+		var token, clientID string
+		if token, clientID = c.Request.Header.Get(consts.Authorization),
+			c.Request.Header.Get(consts.Client); token == "" || clientID == "" {
+			c.AbortWithStatusJSON(http.StatusOK, NewApiResult(501, "获取 JWT 或者 clientID 失败", nil))
 			return
 		}
 
@@ -34,7 +38,9 @@ func (com *Common) VerifyUserToken() gin.HandlerFunc {
 			return
 		}
 
-		c.Keys["userId"] = uid
+		c.Request.Header.Set("userID", uid)
+		c.Request.Header.Set("clientID", clientID)
+
 		//user, err := com.user.GetByID(c, uid)
 		//if err != nil {
 		//	c.AbortWithStatusJSON(200, gin.H{

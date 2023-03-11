@@ -1,7 +1,6 @@
 package handle
 
 import (
-	"log"
 	"net/http"
 
 	"fsm/api/req"
@@ -70,7 +69,7 @@ func (u *User) Register(c *gin.Context) {
 	}
 
 	if err := u.V.Struct(ur); err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "数据验证失败"))
 		return
 	}
 
@@ -91,8 +90,6 @@ func (u *User) Register(c *gin.Context) {
 	//	log.Printf("init user minio :%v", err)
 	//	return
 	//}
-	//session.Set("userid", user.ID)
-	//session.Save()
 
 }
 
@@ -101,37 +98,43 @@ func (u *User) Login(c *gin.Context) {
 	var userLogin req.UserLogin
 
 	if err := c.ShouldBind(&userLogin); err != nil {
-		log.Println("bind err")
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析登录信息失败"))
 		return
 	}
 
-	log.Println(userLogin)
-
 	if err := u.V.Struct(userLogin); err != nil {
-		log.Println("vali err")
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "登录信息验证失败"))
 		return
 	}
 
 	userID, token, err := u.User.Login(c, userLogin.Email, userLogin.PassWord)
 	if err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "登录失败"))
 		return
 	}
-
-	log.Println(userID, token)
 
 	c.AbortWithStatusJSON(http.StatusOK, NewApiResult(200, "登录成功", res.Login{
 		Token:  token,
 		UserID: userID,
 	}))
 
-	//userLogin, err := u.UserService.Login(c, userLogin.Email, userLogin.PassWord)
-	//if err != nil {
-	//	log.Printf("Login err %v", err)
-	//	return
-	//}
-	//
 	//session.Set("userid", userLogin.ID)
 	//session.Save()
+}
+
+func (u *User) UpdatePassword(c *gin.Context) {
+	var up req.UpdatePassword
+	if err := c.ShouldBindJSON(&up); err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析修改密码信息失败"))
+		return
+	}
+
+	if err := u.User.UpdatePassword(c, up); err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "更新密码失败"))
+		return
+	}
+
+	c.JSON(http.StatusOK, NewApiResult(201, "密码更新成功", nil))
 }
 
 func (u *User) Delete(c *gin.Context) {
@@ -150,6 +153,6 @@ func (u *User) Update(c *gin.Context) {
 
 }
 
-func (u *User) Logout(c *gin.Context) {
-
-}
+//func (u *User) Logout(c *gin.Context) {
+//
+//}

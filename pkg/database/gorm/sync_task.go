@@ -11,7 +11,7 @@ type SyncTaskRepository struct {
 	Conn *gorm.DB
 }
 
-func NewSyncRepository(conn *gorm.DB) domain.SyncTask {
+func NewSyncRepository(conn *gorm.DB) domain.SyncTaskRepository {
 	return &SyncTaskRepository{Conn: conn}
 }
 
