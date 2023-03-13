@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AddRouters(router *gin.Engine, user handle.User, file handle.File, dir handle.Dir, syncTask handle.SyncTask, common handle.Common) {
+func AddRoutes(router *gin.Engine, user handle.User, file handle.File, dir handle.Dir, syncTask handle.SyncTask, common handle.Common) {
 	//store := cookie.NewStore([]byte("secret"))
 	//app.Use(sessions.Sessions("sessionId", store))
 
@@ -21,21 +21,10 @@ func AddRouters(router *gin.Engine, user handle.User, file handle.File, dir hand
 	app := router.Group("")
 	app.Use(common.VerifyUserToken())
 
-	{ // test route
+	{ // test
 		app.GET("/test", func(c *gin.Context) {
-
-			log.Println("auth", c.Request.Header.Get("authorization"))
-			log.Println("userid", c.Request.Header.Get("userID"))
-			log.Println("clientID", c.Request.Header.Get("clientID"))
-
-			code := c.Query("testcode")
-			if code == "123" {
-				c.AbortWithStatusJSON(http.StatusOK, "success")
-
-			} else {
-				c.AbortWithStatusJSON(http.StatusOK, "fail")
-			}
-			log.Println("不应该执行")
+			log.Println(c.GetHeader("userID"))
+			log.Println(c.GetHeader("clientID"))
 		})
 	}
 
@@ -58,10 +47,10 @@ func AddRouters(router *gin.Engine, user handle.User, file handle.File, dir hand
 		app.POST("/synctask/create", syncTask.Create)
 		app.GET("/synctask/delete/:syncID", syncTask.Delete)
 		app.GET("/synctask/get/:syncID", syncTask.Get)
-		app.GET("/synctask/getAll", syncTask.GetAll)
+		app.GET("/synctask/getAll", syncTask.GetAllSyncTask)
 	}
 
-	router.GET("/websocket/connect/:user/:client", user.WebsocketConn)
+	app.GET("/websocket/connect", user.WebsocketConn)
 
 	router.POST("/login", user.Login)
 	router.POST("/register", user.Register)

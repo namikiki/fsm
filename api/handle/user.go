@@ -45,16 +45,9 @@ func (u *User) WebsocketConn(c *gin.Context) {
 		return
 	}
 
-	user := c.Param("user")
-	client := c.Param("client")
-	if user == "" || client == "" {
-		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, err.Error()))
-		return
-	}
-
 	wsClient := types.SyncClient{
-		UserID:   user,
-		ClientID: client,
+		UserID:   c.GetHeader("userID"),
+		ClientID: c.GetHeader("clientID"),
 		Conn:     conn,
 	}
 
@@ -62,7 +55,6 @@ func (u *User) WebsocketConn(c *gin.Context) {
 }
 
 func (u *User) Register(c *gin.Context) {
-	//session := sessions.Default(c)
 	var ur req.UserRegister
 	if err := c.ShouldBind(&ur); err != nil {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
@@ -85,7 +77,7 @@ func (u *User) Register(c *gin.Context) {
 		return
 	}
 
-	c.AbortWithStatusJSON(http.StatusOK, "注册成功")
+	c.JSON(http.StatusOK, NewApiJsonResult(201, "注册成功", nil))
 
 	//if err := u.mio.EnableVersioning(c, user.ID); err != nil {
 	//	log.Printf("init user minio :%v", err)
@@ -114,9 +106,7 @@ func (u *User) Login(c *gin.Context) {
 		return
 	}
 
-	log.Println(userID)
-	log.Println(token)
-
+	log.Println("用户", userID, "登录成功")
 	c.JSON(http.StatusOK, NewApiJsonResult(200, "登录成功", res.Login{
 		Token:  token,
 		UserID: userID,

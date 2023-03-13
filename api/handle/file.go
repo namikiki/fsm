@@ -2,6 +2,7 @@ package handle
 
 import (
 	"io"
+	"log"
 	"net/http"
 
 	"fsm/pkg/domain"
@@ -44,7 +45,7 @@ func (f *File) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, NewApiResult(201, "创建文件成功", file))
+	c.JSON(http.StatusOK, NewApiJsonResult(201, "创建文件成功", file))
 
 	//map[string]map[int]map[string]map[string]string
 	// 上传文件回调 文件上传客户端id  文件下载地址 文件夹同步ID， 文件id(防止文件重复) 文件名，复文件夹名，文件层级， 哈希值，修改时间  创建时间
@@ -103,21 +104,22 @@ func (f *File) GetMetadata(c *gin.Context) {
 // todo
 func (f *File) Open(c *gin.Context) {
 
+	userID := c.GetHeader("userID")
 	var fileID string
 	if fileID = c.Param("fileID"); fileID == "" {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "error"))
 		return
 	}
 
-	obj, err := f.FS.Open(c, "xyn233", fileID)
+	object, err := f.FS.Open(c, userID, fileID)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "error"))
 		return
 	}
-	defer obj.Close()
+	defer object.Close()
 
-	if _, err = io.Copy(c.Writer, obj); err != nil {
-		c.JSON(400, "fail")
+	if _, err = io.Copy(c.Writer, object); err != nil {
+		c.JSON(http.StatusOK, NewErrorApiResult(501, "error"))
 	}
 }
 
@@ -129,9 +131,13 @@ func (f *File) GetAllFileBySyncID(c *gin.Context) {
 		return
 	}
 
-	if files, err := f.F.GetAllBySyncID(c, userID, syncID); err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, NewApiResult(201, "获取所有文件信息成功", files))
+	log.Println(userID, syncID)
+
+	files, err := f.F.GetAllBySyncID(c, userID, syncID)
+	if err != nil {
+		c.JSON(http.StatusOK, NewErrorApiResult(501, "获取所有文件信息失败"))
 		return
 	}
-	c.JSON(http.StatusOK, NewErrorApiResult(501, "获取所有文件信息失败"))
+	c.JSON(http.StatusOK, NewApiJsonResult(201, "获取所有文件信息成功", files))
+
 }

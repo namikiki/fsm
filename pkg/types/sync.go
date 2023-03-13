@@ -12,5 +12,5 @@ type PubSubMessage struct {
 	Type     string
 	Action   string
 	ClientID string
-	Data     interface{}
+	Data     []byte
 }

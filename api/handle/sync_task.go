@@ -37,7 +37,7 @@ func (i *SyncTask) Create(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "创建同步任务失败"))
 		return
 	}
-	c.JSON(http.StatusOK, NewApiResult(201, "创建同步任务成功", syncTask))
+	c.JSON(http.StatusOK, NewApiJsonResult(201, "创建同步任务成功", syncTask))
 }
 
 // Delete todo 文件和文件夹删除
@@ -75,10 +75,10 @@ func (i *SyncTask) Get(c *gin.Context) {
 	c.AbortWithStatusJSON(http.StatusOK, syncTask)
 }
 
-func (i *SyncTask) GetAll(c *gin.Context) {
+func (i *SyncTask) GetAllSyncTask(c *gin.Context) {
 
-	if syncTasks, err := i.ST.GetAll(c.GetHeader("userID")); err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, NewApiResult(201, "获取所有的同步任务成功", syncTasks))
+	if syncTasks, err := i.ST.GetAll(c.GetHeader("userID")); err == nil {
+		c.JSON(http.StatusOK, NewApiJsonResult(201, "获取所有的同步任务成功", syncTasks))
 		return
 	}
 	c.JSON(http.StatusOK, NewErrorApiResult(501, "获取失败"))

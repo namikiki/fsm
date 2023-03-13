@@ -18,5 +18,5 @@ var Module = fx.Module("api",
 		handle.NewSyncTask,
 		New,
 	),
-	fx.Invoke(AddRouters),
+	fx.Invoke(AddRoutes),
 )

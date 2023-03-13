@@ -49,33 +49,35 @@ func (s *Syncer) FileCreate(c *gin.Context, file *ent.File, ClientID string) err
 		return err
 	}
 
+	fileMas, _ := json.Marshal(file)
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "file",
 		Action:   "create",
 		ClientID: ClientID,
-		Data:     file,
+		Data:     fileMas,
 	})
 	s.Redis.Publish(c, file.UserID, marshal)
 	return err
 }
 
-func (s *Syncer) FileDelete(c *gin.Context, f ent.File, ClientID string) error {
+func (s *Syncer) FileDelete(c *gin.Context, file ent.File, ClientID string) error {
 
-	if err := s.FR.Delete(c, f); err != nil {
+	if err := s.FR.Delete(c, file); err != nil {
 		return err
 	}
 
-	if err := s.Min.RemoveObject(c, f.UserID, f.ID, minio.RemoveObjectOptions{}); err != nil {
+	if err := s.Min.RemoveObject(c, file.UserID, file.ID, minio.RemoveObjectOptions{}); err != nil {
 		return err
 	}
 
+	fileMas, _ := json.Marshal(file)
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "file",
 		Action:   "delete",
 		ClientID: ClientID,
-		Data:     f,
+		Data:     fileMas,
 	})
-	s.Redis.Publish(c, f.UserID, marshal)
+	s.Redis.Publish(c, file.UserID, marshal)
 	return err
 }
 
@@ -103,11 +105,12 @@ func (s *Syncer) FileUpdate(c *gin.Context, file ent.File, ClientID string) erro
 		return err
 	}
 
+	fileMas, _ := json.Marshal(f)
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "file",
 		Action:   "update",
 		ClientID: ClientID,
-		Data:     f,
+		Data:     fileMas,
 	})
 	s.Redis.Publish(c, file.UserID, marshal)
 	return err
@@ -120,11 +123,12 @@ func (s *Syncer) DirCreate(c *gin.Context, dir *ent.Dir, ClientID string) error 
 		return err
 	}
 
+	dirMas, _ := json.Marshal(dir)
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "dir",
 		Action:   "create",
 		ClientID: ClientID,
-		Data:     dir,
+		Data:     dirMas,
 	})
 
 	s.Redis.Publish(c, dir.UserID, marshal)
@@ -137,11 +141,12 @@ func (s *Syncer) DirDelete(c *gin.Context, dir ent.Dir, ClientID string) error {
 		return err
 	}
 
+	dirMas, _ := json.Marshal(dir)
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "dir",
 		Action:   "delete",
 		ClientID: ClientID,
-		Data:     dir,
+		Data:     dirMas,
 	})
 	s.Redis.Publish(c, dir.UserID, marshal)
 	return err
@@ -154,11 +159,12 @@ func (s *Syncer) SyncTaskCreate(c *gin.Context, syncTask *ent.SyncTask, ClientID
 		return err
 	}
 
+	syncTaskMas, _ := json.Marshal(syncTask)
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "syncTask",
 		Action:   "create",
 		ClientID: ClientID,
-		Data:     syncTask,
+		Data:     syncTaskMas,
 	})
 
 	s.Redis.Publish(c, syncTask.UserID, marshal)
@@ -170,13 +176,17 @@ func (s *Syncer) SyncTaskDelete(c *gin.Context, userID string, syncID string, Cl
 	if err := s.ST.Delete(userID, syncID); err != nil {
 		return err
 	}
+
+	var st ent.SyncTask
+	st.ID = syncID
+
+	syncTaskMas, _ := json.Marshal(st)
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "syncTask",
 		Action:   "delete",
 		ClientID: ClientID,
-		Data:     syncID,
+		Data:     syncTaskMas,
 	})
 	s.Redis.Publish(c, userID, marshal)
 	return err
-
 }

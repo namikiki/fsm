@@ -27,8 +27,7 @@ func Init() ([]byte, time.Duration, hash.Hash) {
 
 func main() {
 	var server *gin.Engine
-	var synce *sync.Syncer
-	//var websocketPool d.WebSocketService
+	var syncer *sync.Syncer
 
 	if err := fx.New(
 
@@ -53,7 +52,6 @@ func main() {
 		),
 
 		fx.Provide(
-			//websocket.NewService,
 			sync.NewSyncer,
 			user.NewService,
 			jwt.NewJWTService,
@@ -62,12 +60,12 @@ func main() {
 
 		api.Module,
 		//fx.Populate(&server, &websocketPool),
-		fx.Populate(&server, &synce),
+		fx.Populate(&server, &syncer),
 	).Err(); err != nil {
 		panic(err)
 	}
 
-	go synce.WebSocketLoop()
+	go syncer.WebSocketLoop()
 	if err := server.Run(":8080"); err != nil {
 		panic(err)
 	}
