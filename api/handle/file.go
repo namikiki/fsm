@@ -41,7 +41,7 @@ func (f *File) Create(c *gin.Context) {
 	file.UserID = c.GetHeader("userID")
 
 	if err := f.S.FileCreate(c, &file, clientID); err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "创建文件失败"))
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "创建文件失败"+err.Error()))
 		return
 	}
 
@@ -55,7 +55,7 @@ func (f *File) Create(c *gin.Context) {
 func (f *File) Delete(c *gin.Context) {
 
 	var file ent.File
-	if err := c.ShouldBindQuery(&file); err != nil {
+	if err := c.ShouldBindJSON(&file); err != nil || file.ID == "" {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
 		return
 	}
@@ -68,7 +68,7 @@ func (f *File) Delete(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, NewApiResult(201, "删除文件成功", file))
+	c.JSON(http.StatusOK, NewApiResult(201, "删除文件成功", nil))
 }
 
 func (f *File) Update(c *gin.Context) {
@@ -83,17 +83,17 @@ func (f *File) Update(c *gin.Context) {
 	file.UserID = c.GetHeader("userID")
 
 	if err := f.S.FileUpdate(c, file, clientID); err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "创建文件失败"))
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "更新文件失败"))
 		return
 	}
 
-	c.JSON(http.StatusOK, NewApiResult(201, "创建文件成功", file))
-
+	c.JSON(http.StatusOK, NewApiJsonResult(201, "更新文件成功", file))
 }
 
+// todo
 func (f *File) GetMetadata(c *gin.Context) {
 
-	fileMeta, err := f.F.GetMetadataByID(c, "user1", "sync1", "123")
+	fileMeta, err := f.F.GetMetadataByID(c, "user1", "123")
 	if err != nil {
 		c.JSON(400, "fail")
 		return
@@ -108,6 +108,12 @@ func (f *File) Open(c *gin.Context) {
 	var fileID string
 	if fileID = c.Param("fileID"); fileID == "" {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "error"))
+		return
+	}
+
+	file, err := f.F.GetMetadataByID(c, userID, fileID)
+	if file.ID == "" {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "此文件不存在"))
 		return
 	}
 

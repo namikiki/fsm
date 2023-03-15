@@ -25,6 +25,7 @@ func AddRoutes(router *gin.Engine, user handle.User, file handle.File, dir handl
 		app.GET("/test", func(c *gin.Context) {
 			log.Println(c.GetHeader("userID"))
 			log.Println(c.GetHeader("clientID"))
+			c.JSON(http.StatusNotFound, "123123")
 		})
 	}
 
@@ -33,6 +34,8 @@ func AddRoutes(router *gin.Engine, user handle.User, file handle.File, dir handl
 		app.GET("/file/getMetadata", file.GetMetadata)
 		app.POST("/file/create", file.Create)
 		app.GET("/file/get/all/bySyncID/:syncID", file.GetAllFileBySyncID)
+		app.DELETE("/file", file.Delete)
+		app.PUT("/file", file.Update)
 	}
 
 	{ // dir

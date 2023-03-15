@@ -18,9 +18,9 @@ func NewFileRepository(conn *gorm.DB) domain.FileRepository {
 	return &FileRepository{Conn: conn}
 }
 
-func (fr *FileRepository) GetMetadataByID(ctx context.Context, userID, syncID, fileID string) (ent.File, error) {
+func (fr *FileRepository) GetMetadataByID(ctx context.Context, userID, fileID string) (ent.File, error) {
 	var f ent.File
-	fr.Conn.Where("user_id = ? and sync_id = ? and id =?", userID, syncID, fileID).Find(&f)
+	fr.Conn.Where("user_id = ? and id =?", userID, fileID).Find(&f)
 	return f, nil
 }
 
@@ -30,7 +30,7 @@ func (fr *FileRepository) Create(ctx context.Context, f *ent.File) error {
 }
 
 func (fr *FileRepository) Delete(ctx context.Context, f ent.File) error {
-	fr.Conn.Delete(&f)
+	fr.Conn.Where("id = ? and sync_id = ?", f.ID, f.SyncID).Delete(&f)
 	return nil
 }
 

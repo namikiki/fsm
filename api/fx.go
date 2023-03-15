@@ -8,7 +8,6 @@ import (
 )
 
 var Module = fx.Module("api",
-	//handle.Module,
 	fx.Provide(
 		validator.New,
 		handle.NewUser,

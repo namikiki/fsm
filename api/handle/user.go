@@ -41,7 +41,7 @@ var upgrader = websocket.Upgrader{
 func (u *User) WebsocketConn(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, err.Error()))
+		c.AbortWithStatusJSON(1003, NewErrorApiResult(501, err.Error()))
 		return
 	}
 
@@ -111,7 +111,6 @@ func (u *User) Login(c *gin.Context) {
 		Token:  token,
 		UserID: userID,
 	}))
-	//c.
 	//	c.JSON(http.StatusOK, NewApiResult(200, "登录成功", res.Login{
 	//	Token:  token,
 	//	UserID: userID,

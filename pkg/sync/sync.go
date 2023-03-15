@@ -43,6 +43,7 @@ func (s *Syncer) FileCreate(c *gin.Context, file *ent.File, ClientID string) err
 		return err
 	}
 
+	file.Size = object.Size
 	file.Hash = object.ETag
 
 	if err := s.FR.Create(c, file); err != nil {

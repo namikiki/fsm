@@ -17,17 +17,17 @@ func NewDirRepository(conn *gorm.DB) domain.DirRepository {
 	return &DirRepository{Conn: conn}
 }
 
-func (d *DirRepository) Create(ctx context.Context, f ent.Dir) error {
-	d.Conn.Create(&f)
+func (d *DirRepository) Create(ctx context.Context, dir ent.Dir) error {
+	d.Conn.Create(&dir)
 	return nil
 }
 
-func (d *DirRepository) Delete(ctx context.Context, f ent.Dir) error {
-	d.Conn.Delete(&f)
+func (d *DirRepository) Delete(ctx context.Context, dir ent.Dir) error {
+	d.Conn.Where("id = ? and sync_id = ?", dir.ID, dir.SyncID).Delete(&dir)
 	return nil
 }
 
-func (d *DirRepository) Rename(ctx context.Context, f ent.Dir, newName string) error {
+func (d *DirRepository) Rename(ctx context.Context, dir ent.Dir, newName string) error {
 	//TODO implement me
 	panic("implement me")
 }
