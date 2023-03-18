@@ -9,8 +9,9 @@ type SyncClient struct {
 }
 
 type PubSubMessage struct {
-	Type     string
-	Action   string
-	ClientID string
-	Data     []byte
+	Type     string `json:"type"`
+	Action   string `json:"action"`
+	SyncID   string `json:"sync_id"`
+	ClientID string `json:"client_id"`
+	Data     []byte `json:"data"`
 }

@@ -54,6 +54,7 @@ func (s *Syncer) FileCreate(c *gin.Context, file *ent.File, ClientID string) err
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "file",
 		Action:   "create",
+		SyncID:   file.SyncID,
 		ClientID: ClientID,
 		Data:     fileMas,
 	})
@@ -75,6 +76,7 @@ func (s *Syncer) FileDelete(c *gin.Context, file ent.File, ClientID string) erro
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "file",
 		Action:   "delete",
+		SyncID:   file.SyncID,
 		ClientID: ClientID,
 		Data:     fileMas,
 	})
@@ -111,6 +113,7 @@ func (s *Syncer) FileUpdate(c *gin.Context, file ent.File, ClientID string) erro
 		Type:     "file",
 		Action:   "update",
 		ClientID: ClientID,
+		SyncID:   file.SyncID,
 		Data:     fileMas,
 	})
 	s.Redis.Publish(c, file.UserID, marshal)
@@ -128,6 +131,7 @@ func (s *Syncer) DirCreate(c *gin.Context, dir *ent.Dir, ClientID string) error 
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "dir",
 		Action:   "create",
+		SyncID:   dir.SyncID,
 		ClientID: ClientID,
 		Data:     dirMas,
 	})
@@ -146,6 +150,7 @@ func (s *Syncer) DirDelete(c *gin.Context, dir ent.Dir, ClientID string) error {
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "dir",
 		Action:   "delete",
+		SyncID:   dir.SyncID,
 		ClientID: ClientID,
 		Data:     dirMas,
 	})
