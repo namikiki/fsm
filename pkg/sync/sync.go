@@ -2,7 +2,6 @@ package sync
 
 import (
 	"encoding/json"
-	"time"
 
 	"fsm/pkg/domain"
 	"fsm/pkg/ent"
@@ -85,30 +84,20 @@ func (s *Syncer) FileDelete(c *gin.Context, file ent.File, ClientID string) erro
 }
 
 func (s *Syncer) FileUpdate(c *gin.Context, file ent.File, ClientID string) error {
-
-	object, err := s.Min.PutObject(c, file.UserID, file.ID, c.Request.Body, c.Request.ContentLength, minio.PutObjectOptions{ContentType: "application/octet-stream"})
+	object, err := s.Min.PutObject(c, file.UserID, file.ID, c.Request.Body, c.Request.ContentLength,
+		minio.PutObjectOptions{ContentType: "application/octet-stream"})
 	if err != nil {
 		return err
 	}
 
-	f := ent.File{
-		ID:          file.ID,
-		UserID:      file.UserID,
-		SyncID:      file.SyncID,
-		Name:        file.Name,
-		ParentDirID: file.ParentDirID,
-		Level:       file.Level,
-		Hash:        object.ETag,
-		Size:        object.Size,
-		Deleted:     false,
-		CreateTime:  time.Now(),
-		ModTime:     time.Now(),
-	}
-	if err := s.FR.Update(c, f); err != nil {
+	file.Size = object.Size
+	file.Hash = object.ETag
+
+	if err := s.FR.Update(c, file); err != nil {
 		return err
 	}
 
-	fileMas, _ := json.Marshal(f)
+	fileMas, _ := json.Marshal(file)
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "file",
 		Action:   "update",
@@ -116,6 +105,7 @@ func (s *Syncer) FileUpdate(c *gin.Context, file ent.File, ClientID string) erro
 		SyncID:   file.SyncID,
 		Data:     fileMas,
 	})
+
 	s.Redis.Publish(c, file.UserID, marshal)
 	return err
 }

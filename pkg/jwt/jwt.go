@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/golang-jwt/jwt/v4"
 	"time"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type Service interface {
@@ -67,11 +68,3 @@ func (j *jwtService) Parse(ctx context.Context, tokenStr string) (string, error)
 	}
 	return "", fmt.Errorf("%v", err)
 }
-
-//func (j jwtService) Renewal(ctx context.Context, tokenStr string) (string, error) {
-//
-//}
-//
-//func renewal(tokenStr string) {
-//
-//}
