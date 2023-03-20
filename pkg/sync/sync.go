@@ -110,6 +110,25 @@ func (s *Syncer) FileUpdate(c *gin.Context, file ent.File, ClientID string) erro
 	return err
 }
 
+func (s *Syncer) FileRename(c *gin.Context, file ent.File, clientID string) error {
+
+	if err := s.FR.Rename(c, file); err != nil {
+		return err
+	}
+
+	fileMas, _ := json.Marshal(file)
+	marshal, err := json.Marshal(types.PubSubMessage{
+		Type:     "file",
+		Action:   "rename",
+		ClientID: clientID,
+		SyncID:   file.SyncID,
+		Data:     fileMas,
+	})
+
+	s.Redis.Publish(c, file.UserID, marshal)
+	return err
+}
+
 func (s *Syncer) DirCreate(c *gin.Context, dir *ent.Dir, ClientID string) error {
 
 	dir.ID = uuid.New().String()
@@ -140,6 +159,24 @@ func (s *Syncer) DirDelete(c *gin.Context, dir ent.Dir, ClientID string) error {
 	marshal, err := json.Marshal(types.PubSubMessage{
 		Type:     "dir",
 		Action:   "delete",
+		SyncID:   dir.SyncID,
+		ClientID: ClientID,
+		Data:     dirMas,
+	})
+	s.Redis.Publish(c, dir.UserID, marshal)
+	return err
+}
+
+func (s *Syncer) DirRename(c *gin.Context, dir ent.Dir, ClientID string) error {
+
+	if err := s.DR.Rename(c, dir); err != nil {
+		return err
+	}
+
+	dirMas, _ := json.Marshal(dir)
+	marshal, err := json.Marshal(types.PubSubMessage{
+		Type:     "dir",
+		Action:   "rename",
 		SyncID:   dir.SyncID,
 		ClientID: ClientID,
 		Data:     dirMas,

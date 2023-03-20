@@ -60,7 +60,7 @@ func (d *Dir) Delete(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "删除目录失败"))
 		return
 	}
-	c.JSON(http.StatusOK, NewApiJsonResult(201, "删除文件夹成功", nil))
+	c.JSON(http.StatusOK, NewApiJsonResult(201, "删除目录成功", nil))
 }
 
 // todo
@@ -115,4 +115,22 @@ func (d *Dir) GetAllDirBySyncID(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, NewErrorApiResult(501, "获取syncID下所有文件夹信息失败"))
+}
+
+func (d *Dir) Rename(c *gin.Context) {
+
+	var dir ent.Dir
+	if err := c.ShouldBindJSON(&dir); err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
+		return
+	}
+
+	clientID := c.GetHeader("clientID")
+	dir.UserID = c.GetHeader("userID")
+
+	if err := d.S.DirRename(c, dir, clientID); err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "更改目录名失败"))
+		return
+	}
+	c.JSON(http.StatusOK, NewApiJsonResult(201, "更改目录名成功", nil))
 }

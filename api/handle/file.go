@@ -81,6 +81,7 @@ func (f *File) Update(c *gin.Context) {
 
 	clientID := c.GetHeader("clientID")
 	file.UserID = c.GetHeader("userID")
+	log.Println("client=", clientID)
 
 	if err := f.S.FileUpdate(c, file, clientID); err != nil {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "更新文件失败"))
@@ -145,5 +146,25 @@ func (f *File) GetAllFileBySyncID(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, NewApiJsonResult(201, "获取所有文件信息成功", files))
+}
 
+func (f *File) Rename(c *gin.Context) {
+
+	var file ent.File
+	if err := c.ShouldBindJSON(&file); err != nil || file.ID == "" {
+		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "解析请求数据失败"))
+		return
+	}
+
+	clientID := c.GetHeader("clientID")
+	file.UserID = c.GetHeader("userID")
+
+	log.Println(file)
+
+	if err := f.S.FileRename(c, file, clientID); err != nil {
+		c.JSON(http.StatusOK, NewErrorApiResult(501, "更新文件名失败"))
+		return
+	}
+
+	c.JSON(http.StatusOK, NewApiJsonResult(201, "更新文件名成功", nil))
 }

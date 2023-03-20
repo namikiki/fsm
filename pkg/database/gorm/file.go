@@ -39,6 +39,11 @@ func (fr *FileRepository) Update(ctx context.Context, f ent.File) error {
 	return nil
 }
 
+func (fr *FileRepository) Rename(ctx context.Context, f ent.File) error {
+	fr.Conn.Save(&f)
+	return nil
+}
+
 func (fr *FileRepository) GetAllBySyncID(ctx context.Context, userID, syncID string) ([]res.File, error) {
 	var files []res.File
 	fr.Conn.Where("user_id =? and sync_id = ?", userID, syncID).Find(&files)

@@ -27,9 +27,9 @@ func (d *DirRepository) Delete(ctx context.Context, dir ent.Dir) error {
 	return nil
 }
 
-func (d *DirRepository) Rename(ctx context.Context, dir ent.Dir, newName string) error {
-	//TODO implement me
-	panic("implement me")
+func (d *DirRepository) Rename(ctx context.Context, dir ent.Dir) error {
+	d.Conn.Save(&dir)
+	return nil
 }
 
 func (d *DirRepository) ReadDir(ctx context.Context, dir ent.Dir) ([]ent.Dir, error) {
