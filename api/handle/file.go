@@ -83,11 +83,12 @@ func (f *File) Update(c *gin.Context) {
 	file.UserID = c.GetHeader("userID")
 	log.Println("client=", clientID)
 
-	if err := f.S.FileUpdate(c, file, clientID); err != nil {
+	if err := f.S.FileUpdate(c, &file, clientID); err != nil {
 		c.AbortWithStatusJSON(http.StatusOK, NewErrorApiResult(501, "更新文件失败"))
 		return
 	}
 
+	log.Println(file)
 	c.JSON(http.StatusOK, NewApiJsonResult(201, "更新文件成功", file))
 }
 

@@ -83,7 +83,7 @@ func (s *Syncer) FileDelete(c *gin.Context, file ent.File, ClientID string) erro
 	return err
 }
 
-func (s *Syncer) FileUpdate(c *gin.Context, file ent.File, ClientID string) error {
+func (s *Syncer) FileUpdate(c *gin.Context, file *ent.File, ClientID string) error {
 	object, err := s.Min.PutObject(c, file.UserID, file.ID, c.Request.Body, c.Request.ContentLength,
 		minio.PutObjectOptions{ContentType: "application/octet-stream"})
 	if err != nil {
@@ -93,7 +93,7 @@ func (s *Syncer) FileUpdate(c *gin.Context, file ent.File, ClientID string) erro
 	file.Size = object.Size
 	file.Hash = object.ETag
 
-	if err := s.FR.Update(c, file); err != nil {
+	if err := s.FR.Update(c, *file); err != nil {
 		return err
 	}
 

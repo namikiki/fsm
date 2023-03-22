@@ -3,7 +3,6 @@ package gorm
 import (
 	"context"
 
-	"fsm/api/res"
 	"fsm/pkg/domain"
 	"fsm/pkg/ent"
 
@@ -44,8 +43,8 @@ func (fr *FileRepository) Rename(ctx context.Context, f ent.File) error {
 	return nil
 }
 
-func (fr *FileRepository) GetAllBySyncID(ctx context.Context, userID, syncID string) ([]res.File, error) {
-	var files []res.File
+func (fr *FileRepository) GetAllBySyncID(ctx context.Context, userID, syncID string) ([]ent.File, error) {
+	var files []ent.File
 	fr.Conn.Where("user_id =? and sync_id = ?", userID, syncID).Find(&files)
 	return files, nil
 }

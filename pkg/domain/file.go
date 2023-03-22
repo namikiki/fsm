@@ -5,7 +5,6 @@ import (
 	"io"
 	"time"
 
-	"fsm/api/res"
 	"fsm/pkg/ent"
 )
 
@@ -15,7 +14,7 @@ type FileRepository interface {
 	GetMetadataByID(ctx context.Context, userID, fileID string) (ent.File, error)
 	Update(ctx context.Context, f ent.File) error
 	Rename(ctx context.Context, f ent.File) error
-	GetAllBySyncID(ctx context.Context, userID, syncID string) ([]res.File, error)
+	GetAllBySyncID(ctx context.Context, userID, syncID string) ([]ent.File, error)
 }
 
 type FileStorageService interface {
