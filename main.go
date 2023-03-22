@@ -3,8 +3,6 @@ package main
 import (
 	"crypto/md5"
 	"hash"
-	"log"
-	"os"
 	"time"
 
 	"fsm/api"
@@ -28,10 +26,10 @@ func Init() ([]byte, time.Duration, hash.Hash) {
 }
 
 func main() {
-	err := os.Remove("gorm.db")
-	if err != nil {
-		log.Println(err)
-	}
+	//err := os.Remove("gorm.db")
+	//if err != nil {
+	//	log.Println(err)
+	//}
 
 	var server *gin.Engine
 	var syncer *sync.Syncer

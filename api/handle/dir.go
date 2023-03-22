@@ -71,8 +71,8 @@ func (d *Dir) ReadDir(c *gin.Context) {
 		Dir:        "root",
 		Level:      0,
 		Deleted:    false,
-		CreateTime: time.Now(),
-		ModTime:    time.Now(),
+		CreateTime: time.Now().Unix(),
+		ModTime:    time.Now().Unix(),
 	}
 	readDir, err := d.D.ReadDir(c, dir)
 	if err != nil {
@@ -91,8 +91,8 @@ func (d *Dir) GetAllDirByPath(c *gin.Context) {
 		Dir:        "root",
 		Level:      0,
 		Deleted:    false,
-		CreateTime: time.Now(),
-		ModTime:    time.Now(),
+		CreateTime: time.Now().Unix(),
+		ModTime:    time.Now().Unix(),
 	}
 	readDir, err := d.D.WalkDirByPath(c, dir)
 	if err != nil {

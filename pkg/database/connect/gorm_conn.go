@@ -8,6 +8,10 @@ import (
 )
 
 func NewGormSQLiteConnect() *gorm.DB {
+	//db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	//if err != nil {
+	//	panic(err)
+	//}
 	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)

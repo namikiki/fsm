@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"fsm/pkg/ent/synctask"
-	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -51,8 +50,8 @@ func (stc *SyncTaskCreate) SetDeleted(b bool) *SyncTaskCreate {
 }
 
 // SetCreateTime sets the "create_time" field.
-func (stc *SyncTaskCreate) SetCreateTime(t time.Time) *SyncTaskCreate {
-	stc.mutation.SetCreateTime(t)
+func (stc *SyncTaskCreate) SetCreateTime(i int64) *SyncTaskCreate {
+	stc.mutation.SetCreateTime(i)
 	return stc
 }
 
@@ -234,7 +233,7 @@ func (stc *SyncTaskCreate) createSpec() (*SyncTask, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := stc.mutation.CreateTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: synctask.FieldCreateTime,
 		})

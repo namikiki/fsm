@@ -33,6 +33,7 @@ func (s *SyncTaskRepository) Get(userID, syncID string) ent.SyncTask {
 
 func (s *SyncTaskRepository) GetAll(userID string) ([]ent.SyncTask, error) {
 	var syncs []ent.SyncTask
+
 	s.Conn.Where(" user_id = ?", userID).Find(&syncs)
 	return syncs, nil
 }

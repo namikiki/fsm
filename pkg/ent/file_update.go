@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"fsm/pkg/ent/file"
 	"fsm/pkg/ent/predicate"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -91,14 +90,28 @@ func (fu *FileUpdate) SetDeleted(b bool) *FileUpdate {
 }
 
 // SetCreateTime sets the "create_time" field.
-func (fu *FileUpdate) SetCreateTime(t time.Time) *FileUpdate {
-	fu.mutation.SetCreateTime(t)
+func (fu *FileUpdate) SetCreateTime(i int64) *FileUpdate {
+	fu.mutation.ResetCreateTime()
+	fu.mutation.SetCreateTime(i)
+	return fu
+}
+
+// AddCreateTime adds i to the "create_time" field.
+func (fu *FileUpdate) AddCreateTime(i int64) *FileUpdate {
+	fu.mutation.AddCreateTime(i)
 	return fu
 }
 
 // SetModTime sets the "mod_time" field.
-func (fu *FileUpdate) SetModTime(t time.Time) *FileUpdate {
-	fu.mutation.SetModTime(t)
+func (fu *FileUpdate) SetModTime(i int64) *FileUpdate {
+	fu.mutation.ResetModTime()
+	fu.mutation.SetModTime(i)
+	return fu
+}
+
+// AddModTime adds i to the "mod_time" field.
+func (fu *FileUpdate) AddModTime(i int64) *FileUpdate {
+	fu.mutation.AddModTime(i)
 	return fu
 }
 
@@ -251,14 +264,28 @@ func (fu *FileUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := fu.mutation.CreateTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: file.FieldCreateTime,
+		})
+	}
+	if value, ok := fu.mutation.AddedCreateTime(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: file.FieldCreateTime,
 		})
 	}
 	if value, ok := fu.mutation.ModTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: file.FieldModTime,
+		})
+	}
+	if value, ok := fu.mutation.AddedModTime(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: file.FieldModTime,
 		})
@@ -345,14 +372,28 @@ func (fuo *FileUpdateOne) SetDeleted(b bool) *FileUpdateOne {
 }
 
 // SetCreateTime sets the "create_time" field.
-func (fuo *FileUpdateOne) SetCreateTime(t time.Time) *FileUpdateOne {
-	fuo.mutation.SetCreateTime(t)
+func (fuo *FileUpdateOne) SetCreateTime(i int64) *FileUpdateOne {
+	fuo.mutation.ResetCreateTime()
+	fuo.mutation.SetCreateTime(i)
+	return fuo
+}
+
+// AddCreateTime adds i to the "create_time" field.
+func (fuo *FileUpdateOne) AddCreateTime(i int64) *FileUpdateOne {
+	fuo.mutation.AddCreateTime(i)
 	return fuo
 }
 
 // SetModTime sets the "mod_time" field.
-func (fuo *FileUpdateOne) SetModTime(t time.Time) *FileUpdateOne {
-	fuo.mutation.SetModTime(t)
+func (fuo *FileUpdateOne) SetModTime(i int64) *FileUpdateOne {
+	fuo.mutation.ResetModTime()
+	fuo.mutation.SetModTime(i)
+	return fuo
+}
+
+// AddModTime adds i to the "mod_time" field.
+func (fuo *FileUpdateOne) AddModTime(i int64) *FileUpdateOne {
+	fuo.mutation.AddModTime(i)
 	return fuo
 }
 
@@ -535,14 +576,28 @@ func (fuo *FileUpdateOne) sqlSave(ctx context.Context) (_node *File, err error) 
 	}
 	if value, ok := fuo.mutation.CreateTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: file.FieldCreateTime,
+		})
+	}
+	if value, ok := fuo.mutation.AddedCreateTime(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: file.FieldCreateTime,
 		})
 	}
 	if value, ok := fuo.mutation.ModTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeInt64,
+			Value:  value,
+			Column: file.FieldModTime,
+		})
+	}
+	if value, ok := fuo.mutation.AddedModTime(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt64,
 			Value:  value,
 			Column: file.FieldModTime,
 		})

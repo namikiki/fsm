@@ -4,7 +4,6 @@ package synctask
 
 import (
 	"fsm/pkg/ent/predicate"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 )
@@ -116,7 +115,7 @@ func Deleted(v bool) predicate.SyncTask {
 }
 
 // CreateTime applies equality check predicate on the "create_time" field. It's identical to CreateTimeEQ.
-func CreateTime(v time.Time) predicate.SyncTask {
+func CreateTime(v int64) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreateTime), v))
 	})
@@ -533,21 +532,21 @@ func DeletedNEQ(v bool) predicate.SyncTask {
 }
 
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
-func CreateTimeEQ(v time.Time) predicate.SyncTask {
+func CreateTimeEQ(v int64) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreateTime), v))
 	})
 }
 
 // CreateTimeNEQ applies the NEQ predicate on the "create_time" field.
-func CreateTimeNEQ(v time.Time) predicate.SyncTask {
+func CreateTimeNEQ(v int64) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldCreateTime), v))
 	})
 }
 
 // CreateTimeIn applies the In predicate on the "create_time" field.
-func CreateTimeIn(vs ...time.Time) predicate.SyncTask {
+func CreateTimeIn(vs ...int64) predicate.SyncTask {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -558,7 +557,7 @@ func CreateTimeIn(vs ...time.Time) predicate.SyncTask {
 }
 
 // CreateTimeNotIn applies the NotIn predicate on the "create_time" field.
-func CreateTimeNotIn(vs ...time.Time) predicate.SyncTask {
+func CreateTimeNotIn(vs ...int64) predicate.SyncTask {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -569,28 +568,28 @@ func CreateTimeNotIn(vs ...time.Time) predicate.SyncTask {
 }
 
 // CreateTimeGT applies the GT predicate on the "create_time" field.
-func CreateTimeGT(v time.Time) predicate.SyncTask {
+func CreateTimeGT(v int64) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldCreateTime), v))
 	})
 }
 
 // CreateTimeGTE applies the GTE predicate on the "create_time" field.
-func CreateTimeGTE(v time.Time) predicate.SyncTask {
+func CreateTimeGTE(v int64) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldCreateTime), v))
 	})
 }
 
 // CreateTimeLT applies the LT predicate on the "create_time" field.
-func CreateTimeLT(v time.Time) predicate.SyncTask {
+func CreateTimeLT(v int64) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldCreateTime), v))
 	})
 }
 
 // CreateTimeLTE applies the LTE predicate on the "create_time" field.
-func CreateTimeLTE(v time.Time) predicate.SyncTask {
+func CreateTimeLTE(v int64) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCreateTime), v))
 	})

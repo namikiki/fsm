@@ -20,7 +20,7 @@ func (Dir) Fields() []ent.Field {
 		//field.String("parent_dir"),
 		field.Uint64("level"),
 		field.Bool("deleted"),
-		field.Time("create_time"),
-		field.Time("mod_time"),
+		field.Int64("create_time"),
+		field.Int64("mod_time"),
 	}
 }

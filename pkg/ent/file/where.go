@@ -4,7 +4,6 @@ package file
 
 import (
 	"fsm/pkg/ent/predicate"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 )
@@ -137,14 +136,14 @@ func Deleted(v bool) predicate.File {
 }
 
 // CreateTime applies equality check predicate on the "create_time" field. It's identical to CreateTimeEQ.
-func CreateTime(v time.Time) predicate.File {
+func CreateTime(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreateTime), v))
 	})
 }
 
 // ModTime applies equality check predicate on the "mod_time" field. It's identical to ModTimeEQ.
-func ModTime(v time.Time) predicate.File {
+func ModTime(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldModTime), v))
 	})
@@ -788,21 +787,21 @@ func DeletedNEQ(v bool) predicate.File {
 }
 
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
-func CreateTimeEQ(v time.Time) predicate.File {
+func CreateTimeEQ(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreateTime), v))
 	})
 }
 
 // CreateTimeNEQ applies the NEQ predicate on the "create_time" field.
-func CreateTimeNEQ(v time.Time) predicate.File {
+func CreateTimeNEQ(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldCreateTime), v))
 	})
 }
 
 // CreateTimeIn applies the In predicate on the "create_time" field.
-func CreateTimeIn(vs ...time.Time) predicate.File {
+func CreateTimeIn(vs ...int64) predicate.File {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -813,7 +812,7 @@ func CreateTimeIn(vs ...time.Time) predicate.File {
 }
 
 // CreateTimeNotIn applies the NotIn predicate on the "create_time" field.
-func CreateTimeNotIn(vs ...time.Time) predicate.File {
+func CreateTimeNotIn(vs ...int64) predicate.File {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -824,49 +823,49 @@ func CreateTimeNotIn(vs ...time.Time) predicate.File {
 }
 
 // CreateTimeGT applies the GT predicate on the "create_time" field.
-func CreateTimeGT(v time.Time) predicate.File {
+func CreateTimeGT(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldCreateTime), v))
 	})
 }
 
 // CreateTimeGTE applies the GTE predicate on the "create_time" field.
-func CreateTimeGTE(v time.Time) predicate.File {
+func CreateTimeGTE(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldCreateTime), v))
 	})
 }
 
 // CreateTimeLT applies the LT predicate on the "create_time" field.
-func CreateTimeLT(v time.Time) predicate.File {
+func CreateTimeLT(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldCreateTime), v))
 	})
 }
 
 // CreateTimeLTE applies the LTE predicate on the "create_time" field.
-func CreateTimeLTE(v time.Time) predicate.File {
+func CreateTimeLTE(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCreateTime), v))
 	})
 }
 
 // ModTimeEQ applies the EQ predicate on the "mod_time" field.
-func ModTimeEQ(v time.Time) predicate.File {
+func ModTimeEQ(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldModTime), v))
 	})
 }
 
 // ModTimeNEQ applies the NEQ predicate on the "mod_time" field.
-func ModTimeNEQ(v time.Time) predicate.File {
+func ModTimeNEQ(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldModTime), v))
 	})
 }
 
 // ModTimeIn applies the In predicate on the "mod_time" field.
-func ModTimeIn(vs ...time.Time) predicate.File {
+func ModTimeIn(vs ...int64) predicate.File {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -877,7 +876,7 @@ func ModTimeIn(vs ...time.Time) predicate.File {
 }
 
 // ModTimeNotIn applies the NotIn predicate on the "mod_time" field.
-func ModTimeNotIn(vs ...time.Time) predicate.File {
+func ModTimeNotIn(vs ...int64) predicate.File {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -888,28 +887,28 @@ func ModTimeNotIn(vs ...time.Time) predicate.File {
 }
 
 // ModTimeGT applies the GT predicate on the "mod_time" field.
-func ModTimeGT(v time.Time) predicate.File {
+func ModTimeGT(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldModTime), v))
 	})
 }
 
 // ModTimeGTE applies the GTE predicate on the "mod_time" field.
-func ModTimeGTE(v time.Time) predicate.File {
+func ModTimeGTE(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldModTime), v))
 	})
 }
 
 // ModTimeLT applies the LT predicate on the "mod_time" field.
-func ModTimeLT(v time.Time) predicate.File {
+func ModTimeLT(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldModTime), v))
 	})
 }
 
 // ModTimeLTE applies the LTE predicate on the "mod_time" field.
-func ModTimeLTE(v time.Time) predicate.File {
+func ModTimeLTE(v int64) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldModTime), v))
 	})
