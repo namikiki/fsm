@@ -51,6 +51,12 @@ func (stu *SyncTaskUpdate) SetRootDir(s string) *SyncTaskUpdate {
 	return stu
 }
 
+// SetIgnore sets the "ignore" field.
+func (stu *SyncTaskUpdate) SetIgnore(b bool) *SyncTaskUpdate {
+	stu.mutation.SetIgnore(b)
+	return stu
+}
+
 // SetDeleted sets the "deleted" field.
 func (stu *SyncTaskUpdate) SetDeleted(b bool) *SyncTaskUpdate {
 	stu.mutation.SetDeleted(b)
@@ -175,6 +181,13 @@ func (stu *SyncTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: synctask.FieldRootDir,
 		})
 	}
+	if value, ok := stu.mutation.Ignore(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: synctask.FieldIgnore,
+		})
+	}
 	if value, ok := stu.mutation.Deleted(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -236,6 +249,12 @@ func (stuo *SyncTaskUpdateOne) SetName(s string) *SyncTaskUpdateOne {
 // SetRootDir sets the "root_dir" field.
 func (stuo *SyncTaskUpdateOne) SetRootDir(s string) *SyncTaskUpdateOne {
 	stuo.mutation.SetRootDir(s)
+	return stuo
+}
+
+// SetIgnore sets the "ignore" field.
+func (stuo *SyncTaskUpdateOne) SetIgnore(b bool) *SyncTaskUpdateOne {
+	stuo.mutation.SetIgnore(b)
 	return stuo
 }
 
@@ -391,6 +410,13 @@ func (stuo *SyncTaskUpdateOne) sqlSave(ctx context.Context) (_node *SyncTask, er
 			Type:   field.TypeString,
 			Value:  value,
 			Column: synctask.FieldRootDir,
+		})
+	}
+	if value, ok := stuo.mutation.Ignore(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: synctask.FieldIgnore,
 		})
 	}
 	if value, ok := stuo.mutation.Deleted(); ok {

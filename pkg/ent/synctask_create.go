@@ -43,6 +43,12 @@ func (stc *SyncTaskCreate) SetRootDir(s string) *SyncTaskCreate {
 	return stc
 }
 
+// SetIgnore sets the "ignore" field.
+func (stc *SyncTaskCreate) SetIgnore(b bool) *SyncTaskCreate {
+	stc.mutation.SetIgnore(b)
+	return stc
+}
+
 // SetDeleted sets the "deleted" field.
 func (stc *SyncTaskCreate) SetDeleted(b bool) *SyncTaskCreate {
 	stc.mutation.SetDeleted(b)
@@ -149,6 +155,9 @@ func (stc *SyncTaskCreate) check() error {
 	if _, ok := stc.mutation.RootDir(); !ok {
 		return &ValidationError{Name: "root_dir", err: errors.New(`ent: missing required field "SyncTask.root_dir"`)}
 	}
+	if _, ok := stc.mutation.Ignore(); !ok {
+		return &ValidationError{Name: "ignore", err: errors.New(`ent: missing required field "SyncTask.ignore"`)}
+	}
 	if _, ok := stc.mutation.Deleted(); !ok {
 		return &ValidationError{Name: "deleted", err: errors.New(`ent: missing required field "SyncTask.deleted"`)}
 	}
@@ -222,6 +231,14 @@ func (stc *SyncTaskCreate) createSpec() (*SyncTask, *sqlgraph.CreateSpec) {
 			Column: synctask.FieldRootDir,
 		})
 		_node.RootDir = value
+	}
+	if value, ok := stc.mutation.Ignore(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: synctask.FieldIgnore,
+		})
+		_node.Ignore = value
 	}
 	if value, ok := stc.mutation.Deleted(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

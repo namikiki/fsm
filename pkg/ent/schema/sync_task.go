@@ -20,6 +20,7 @@ func (SyncTask) Fields() []ent.Field {
 		field.String("name"),
 		field.String("root_dir"),
 
+		field.Bool("ignore"),
 		field.Bool("deleted"),
 		field.Int64("create_time"),
 	}

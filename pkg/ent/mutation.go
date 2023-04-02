@@ -1722,6 +1722,7 @@ type SyncTaskMutation struct {
 	_type          *string
 	name           *string
 	root_dir       *string
+	ignore         *bool
 	deleted        *bool
 	create_time    *int64
 	addcreate_time *int64
@@ -1979,6 +1980,42 @@ func (m *SyncTaskMutation) ResetRootDir() {
 	m.root_dir = nil
 }
 
+// SetIgnore sets the "ignore" field.
+func (m *SyncTaskMutation) SetIgnore(b bool) {
+	m.ignore = &b
+}
+
+// Ignore returns the value of the "ignore" field in the mutation.
+func (m *SyncTaskMutation) Ignore() (r bool, exists bool) {
+	v := m.ignore
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIgnore returns the old "ignore" field's value of the SyncTask entity.
+// If the SyncTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SyncTaskMutation) OldIgnore(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIgnore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIgnore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIgnore: %w", err)
+	}
+	return oldValue.Ignore, nil
+}
+
+// ResetIgnore resets all changes to the "ignore" field.
+func (m *SyncTaskMutation) ResetIgnore() {
+	m.ignore = nil
+}
+
 // SetDeleted sets the "deleted" field.
 func (m *SyncTaskMutation) SetDeleted(b bool) {
 	m.deleted = &b
@@ -2090,7 +2127,7 @@ func (m *SyncTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SyncTaskMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.user_id != nil {
 		fields = append(fields, synctask.FieldUserID)
 	}
@@ -2102,6 +2139,9 @@ func (m *SyncTaskMutation) Fields() []string {
 	}
 	if m.root_dir != nil {
 		fields = append(fields, synctask.FieldRootDir)
+	}
+	if m.ignore != nil {
+		fields = append(fields, synctask.FieldIgnore)
 	}
 	if m.deleted != nil {
 		fields = append(fields, synctask.FieldDeleted)
@@ -2125,6 +2165,8 @@ func (m *SyncTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case synctask.FieldRootDir:
 		return m.RootDir()
+	case synctask.FieldIgnore:
+		return m.Ignore()
 	case synctask.FieldDeleted:
 		return m.Deleted()
 	case synctask.FieldCreateTime:
@@ -2146,6 +2188,8 @@ func (m *SyncTaskMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldName(ctx)
 	case synctask.FieldRootDir:
 		return m.OldRootDir(ctx)
+	case synctask.FieldIgnore:
+		return m.OldIgnore(ctx)
 	case synctask.FieldDeleted:
 		return m.OldDeleted(ctx)
 	case synctask.FieldCreateTime:
@@ -2186,6 +2230,13 @@ func (m *SyncTaskMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRootDir(v)
+		return nil
+	case synctask.FieldIgnore:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIgnore(v)
 		return nil
 	case synctask.FieldDeleted:
 		v, ok := value.(bool)
@@ -2276,6 +2327,9 @@ func (m *SyncTaskMutation) ResetField(name string) error {
 		return nil
 	case synctask.FieldRootDir:
 		m.ResetRootDir()
+		return nil
+	case synctask.FieldIgnore:
+		m.ResetIgnore()
 		return nil
 	case synctask.FieldDeleted:
 		m.ResetDeleted()

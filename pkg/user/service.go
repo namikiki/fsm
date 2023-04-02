@@ -28,6 +28,10 @@ func NewService(jwt jwt.Service, salt salt.Service, user domain.UserRepository) 
 	}
 }
 
+func (s *Service) GetUser(ctx context.Context, userID string) (*ent.User, error) {
+	return s.user.GetByID(ctx, userID)
+}
+
 func (s *Service) Login(ctx context.Context, email, password string) (string, string, error) {
 	user, err := s.user.GetByEmail(ctx, email)
 	if err != nil {

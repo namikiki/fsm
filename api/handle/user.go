@@ -1,6 +1,7 @@
 package handle
 
 import (
+	"fsm/pkg/jwt"
 	"log"
 	"net/http"
 
@@ -22,14 +23,16 @@ type User struct {
 	mio  *minio.Client
 	Sync *sync.Syncer
 	User *user.Service
+	JWT  jwt.Service
 }
 
-func NewUser(v *validator.Validate, mio *minio.Client, sync *sync.Syncer, user *user.Service) User {
+func NewUser(v *validator.Validate, mio *minio.Client, sync *sync.Syncer, user *user.Service, jwt jwt.Service) User {
 	return User{
 		V:    v,
 		mio:  mio,
 		Sync: sync,
 		User: user,
+		JWT:  jwt,
 	}
 }
 
@@ -151,6 +154,29 @@ func (u *User) Update(c *gin.Context) {
 
 }
 
-//func (u *User) Logout(c *gin.Context) {
-//
-//}
+func (u *User) JWTLogin(c *gin.Context) {
+
+	uid, err := u.JWT.Parse(c, c.GetHeader("jwt"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, NewApiResult(501, "JWT 解析失败", nil))
+		return
+	}
+
+	getUser, err := u.User.GetUser(c, uid)
+	if err != nil || getUser.ID == "" {
+		c.JSON(http.StatusBadRequest, err.Error()+"或者用户不存在")
+		return
+	}
+
+	gen, err := u.JWT.Gen(c, getUser.ID)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, NewApiJsonResult(200, "登录成功", res.Login{
+		UserID: getUser.ID,
+		Token:  gen,
+	}))
+	log.Println(getUser.ID, gen)
+}

@@ -52,6 +52,7 @@ var (
 		{Name: "type", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "root_dir", Type: field.TypeString},
+		{Name: "ignore", Type: field.TypeBool},
 		{Name: "deleted", Type: field.TypeBool},
 		{Name: "create_time", Type: field.TypeInt64},
 	}

@@ -107,6 +107,13 @@ func RootDir(v string) predicate.SyncTask {
 	})
 }
 
+// Ignore applies equality check predicate on the "ignore" field. It's identical to IgnoreEQ.
+func Ignore(v bool) predicate.SyncTask {
+	return predicate.SyncTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIgnore), v))
+	})
+}
+
 // Deleted applies equality check predicate on the "deleted" field. It's identical to DeletedEQ.
 func Deleted(v bool) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
@@ -514,6 +521,20 @@ func RootDirEqualFold(v string) predicate.SyncTask {
 func RootDirContainsFold(v string) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldRootDir), v))
+	})
+}
+
+// IgnoreEQ applies the EQ predicate on the "ignore" field.
+func IgnoreEQ(v bool) predicate.SyncTask {
+	return predicate.SyncTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIgnore), v))
+	})
+}
+
+// IgnoreNEQ applies the NEQ predicate on the "ignore" field.
+func IgnoreNEQ(v bool) predicate.SyncTask {
+	return predicate.SyncTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIgnore), v))
 	})
 }
 

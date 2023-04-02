@@ -23,6 +23,8 @@ type SyncTask struct {
 	Name string `json:"name,omitempty"`
 	// RootDir holds the value of the "root_dir" field.
 	RootDir string `json:"root_dir,omitempty"`
+	// Ignore holds the value of the "ignore" field.
+	Ignore bool `json:"ignore,omitempty"`
 	// Deleted holds the value of the "deleted" field.
 	Deleted bool `json:"deleted,omitempty"`
 	// CreateTime holds the value of the "create_time" field.
@@ -34,7 +36,7 @@ func (*SyncTask) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case synctask.FieldDeleted:
+		case synctask.FieldIgnore, synctask.FieldDeleted:
 			values[i] = new(sql.NullBool)
 		case synctask.FieldCreateTime:
 			values[i] = new(sql.NullInt64)
@@ -84,6 +86,12 @@ func (st *SyncTask) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field root_dir", values[i])
 			} else if value.Valid {
 				st.RootDir = value.String
+			}
+		case synctask.FieldIgnore:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field ignore", values[i])
+			} else if value.Valid {
+				st.Ignore = value.Bool
 			}
 		case synctask.FieldDeleted:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -136,6 +144,9 @@ func (st *SyncTask) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("root_dir=")
 	builder.WriteString(st.RootDir)
+	builder.WriteString(", ")
+	builder.WriteString("ignore=")
+	builder.WriteString(fmt.Sprintf("%v", st.Ignore))
 	builder.WriteString(", ")
 	builder.WriteString("deleted=")
 	builder.WriteString(fmt.Sprintf("%v", st.Deleted))

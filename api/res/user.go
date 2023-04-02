@@ -15,3 +15,8 @@ type Login struct {
 	Token  string `json:"token"`
 	UserID string `json:"user_id"`
 }
+
+type JWTLogin struct {
+	UserID string `json:"user_id"`
+	JWT    string `json:"jwt"`
+}
