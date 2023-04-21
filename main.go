@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/md5"
 	"hash"
+	"log"
 	"time"
 
 	"fsm/api"
@@ -30,7 +31,7 @@ func main() {
 	//if err != nil {
 	//	log.Println(err)
 	//}
-
+	log.SetFlags(log.LstdFlags | log.Llongfile)
 	var server *gin.Engine
 	var syncer *sync.Syncer
 

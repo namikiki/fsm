@@ -31,8 +31,10 @@ func (s *Syncer) SubAndSendClient(c types.SyncClient) {
 		//err = json.Unmarshal([]byte(message.Payload), &psm)
 
 		if err := c.Conn.WriteMessage(websocket.BinaryMessage, []byte(message.Payload)); err != nil {
-			log.Println(err)
-			continue
+			if websocket.IsCloseError(err, websocket.CloseNormalClosure) {
+				c.Conn.Close()
+				return
+			}
 		}
 	}
 

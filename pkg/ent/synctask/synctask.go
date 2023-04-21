@@ -17,8 +17,6 @@ const (
 	FieldRootDir = "root_dir"
 	// FieldIgnore holds the string denoting the ignore field in the database.
 	FieldIgnore = "ignore"
-	// FieldDeleted holds the string denoting the deleted field in the database.
-	FieldDeleted = "deleted"
 	// FieldCreateTime holds the string denoting the create_time field in the database.
 	FieldCreateTime = "create_time"
 	// Table holds the table name of the synctask in the database.
@@ -33,7 +31,6 @@ var Columns = []string{
 	FieldName,
 	FieldRootDir,
 	FieldIgnore,
-	FieldDeleted,
 	FieldCreateTime,
 }
 

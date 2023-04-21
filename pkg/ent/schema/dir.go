@@ -17,8 +17,8 @@ func (Dir) Fields() []ent.Field {
 		field.String("user_id"),
 		field.String("sync_id"),
 		field.String("dir"),
-		//field.String("parent_dir"),
-		field.Uint64("level"),
+
+		field.Int("level"),
 		field.Bool("deleted"),
 		field.Int64("create_time"),
 		field.Int64("mod_time"),

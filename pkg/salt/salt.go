@@ -19,10 +19,10 @@ func NewSaltService(h hash.Hash) Service {
 	return &saltService{h}
 }
 
-func (s *saltService) Hashed(str, salt []byte) string {
+func (s *saltService) Hashed(password, salt []byte) string {
 	defer s.Hash.Reset()
 	s.Hash.Write(salt)
-	s.Hash.Write(str)
+	s.Hash.Write(password)
 	return hex.EncodeToString(s.Hash.Sum(nil))
 }
 

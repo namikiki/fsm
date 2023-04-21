@@ -114,13 +114,6 @@ func Ignore(v bool) predicate.SyncTask {
 	})
 }
 
-// Deleted applies equality check predicate on the "deleted" field. It's identical to DeletedEQ.
-func Deleted(v bool) predicate.SyncTask {
-	return predicate.SyncTask(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeleted), v))
-	})
-}
-
 // CreateTime applies equality check predicate on the "create_time" field. It's identical to CreateTimeEQ.
 func CreateTime(v int64) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
@@ -535,20 +528,6 @@ func IgnoreEQ(v bool) predicate.SyncTask {
 func IgnoreNEQ(v bool) predicate.SyncTask {
 	return predicate.SyncTask(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldIgnore), v))
-	})
-}
-
-// DeletedEQ applies the EQ predicate on the "deleted" field.
-func DeletedEQ(v bool) predicate.SyncTask {
-	return predicate.SyncTask(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDeleted), v))
-	})
-}
-
-// DeletedNEQ applies the NEQ predicate on the "deleted" field.
-func DeletedNEQ(v bool) predicate.SyncTask {
-	return predicate.SyncTask(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDeleted), v))
 	})
 }
 

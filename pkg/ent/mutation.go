@@ -40,8 +40,8 @@ type DirMutation struct {
 	user_id        *string
 	sync_id        *string
 	dir            *string
-	level          *uint64
-	addlevel       *int64
+	level          *int
+	addlevel       *int
 	deleted        *bool
 	create_time    *int64
 	addcreate_time *int64
@@ -266,13 +266,13 @@ func (m *DirMutation) ResetDir() {
 }
 
 // SetLevel sets the "level" field.
-func (m *DirMutation) SetLevel(u uint64) {
-	m.level = &u
+func (m *DirMutation) SetLevel(i int) {
+	m.level = &i
 	m.addlevel = nil
 }
 
 // Level returns the value of the "level" field in the mutation.
-func (m *DirMutation) Level() (r uint64, exists bool) {
+func (m *DirMutation) Level() (r int, exists bool) {
 	v := m.level
 	if v == nil {
 		return
@@ -283,7 +283,7 @@ func (m *DirMutation) Level() (r uint64, exists bool) {
 // OldLevel returns the old "level" field's value of the Dir entity.
 // If the Dir object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DirMutation) OldLevel(ctx context.Context) (v uint64, err error) {
+func (m *DirMutation) OldLevel(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLevel is only allowed on UpdateOne operations")
 	}
@@ -297,17 +297,17 @@ func (m *DirMutation) OldLevel(ctx context.Context) (v uint64, err error) {
 	return oldValue.Level, nil
 }
 
-// AddLevel adds u to the "level" field.
-func (m *DirMutation) AddLevel(u int64) {
+// AddLevel adds i to the "level" field.
+func (m *DirMutation) AddLevel(i int) {
 	if m.addlevel != nil {
-		*m.addlevel += u
+		*m.addlevel += i
 	} else {
-		m.addlevel = &u
+		m.addlevel = &i
 	}
 }
 
 // AddedLevel returns the value that was added to the "level" field in this mutation.
-func (m *DirMutation) AddedLevel() (r int64, exists bool) {
+func (m *DirMutation) AddedLevel() (r int, exists bool) {
 	v := m.addlevel
 	if v == nil {
 		return
@@ -586,7 +586,7 @@ func (m *DirMutation) SetField(name string, value ent.Value) error {
 		m.SetDir(v)
 		return nil
 	case dir.FieldLevel:
-		v, ok := value.(uint64)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -654,7 +654,7 @@ func (m *DirMutation) AddedField(name string) (ent.Value, bool) {
 func (m *DirMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case dir.FieldLevel:
-		v, ok := value.(int64)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -784,8 +784,8 @@ type FileMutation struct {
 	sync_id        *string
 	name           *string
 	parent_dir_id  *string
-	level          *uint64
-	addlevel       *int64
+	level          *int
+	addlevel       *int
 	hash           *string
 	size           *int64
 	addsize        *int64
@@ -1049,13 +1049,13 @@ func (m *FileMutation) ResetParentDirID() {
 }
 
 // SetLevel sets the "level" field.
-func (m *FileMutation) SetLevel(u uint64) {
-	m.level = &u
+func (m *FileMutation) SetLevel(i int) {
+	m.level = &i
 	m.addlevel = nil
 }
 
 // Level returns the value of the "level" field in the mutation.
-func (m *FileMutation) Level() (r uint64, exists bool) {
+func (m *FileMutation) Level() (r int, exists bool) {
 	v := m.level
 	if v == nil {
 		return
@@ -1066,7 +1066,7 @@ func (m *FileMutation) Level() (r uint64, exists bool) {
 // OldLevel returns the old "level" field's value of the File entity.
 // If the File object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *FileMutation) OldLevel(ctx context.Context) (v uint64, err error) {
+func (m *FileMutation) OldLevel(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLevel is only allowed on UpdateOne operations")
 	}
@@ -1080,17 +1080,17 @@ func (m *FileMutation) OldLevel(ctx context.Context) (v uint64, err error) {
 	return oldValue.Level, nil
 }
 
-// AddLevel adds u to the "level" field.
-func (m *FileMutation) AddLevel(u int64) {
+// AddLevel adds i to the "level" field.
+func (m *FileMutation) AddLevel(i int) {
 	if m.addlevel != nil {
-		*m.addlevel += u
+		*m.addlevel += i
 	} else {
-		m.addlevel = &u
+		m.addlevel = &i
 	}
 }
 
 // AddedLevel returns the value that was added to the "level" field in this mutation.
-func (m *FileMutation) AddedLevel() (r int64, exists bool) {
+func (m *FileMutation) AddedLevel() (r int, exists bool) {
 	v := m.addlevel
 	if v == nil {
 		return
@@ -1489,7 +1489,7 @@ func (m *FileMutation) SetField(name string, value ent.Value) error {
 		m.SetParentDirID(v)
 		return nil
 	case file.FieldLevel:
-		v, ok := value.(uint64)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1576,7 +1576,7 @@ func (m *FileMutation) AddedField(name string) (ent.Value, bool) {
 func (m *FileMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case file.FieldLevel:
-		v, ok := value.(int64)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1723,7 +1723,6 @@ type SyncTaskMutation struct {
 	name           *string
 	root_dir       *string
 	ignore         *bool
-	deleted        *bool
 	create_time    *int64
 	addcreate_time *int64
 	clearedFields  map[string]struct{}
@@ -2016,42 +2015,6 @@ func (m *SyncTaskMutation) ResetIgnore() {
 	m.ignore = nil
 }
 
-// SetDeleted sets the "deleted" field.
-func (m *SyncTaskMutation) SetDeleted(b bool) {
-	m.deleted = &b
-}
-
-// Deleted returns the value of the "deleted" field in the mutation.
-func (m *SyncTaskMutation) Deleted() (r bool, exists bool) {
-	v := m.deleted
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeleted returns the old "deleted" field's value of the SyncTask entity.
-// If the SyncTask object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SyncTaskMutation) OldDeleted(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeleted is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeleted requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeleted: %w", err)
-	}
-	return oldValue.Deleted, nil
-}
-
-// ResetDeleted resets all changes to the "deleted" field.
-func (m *SyncTaskMutation) ResetDeleted() {
-	m.deleted = nil
-}
-
 // SetCreateTime sets the "create_time" field.
 func (m *SyncTaskMutation) SetCreateTime(i int64) {
 	m.create_time = &i
@@ -2127,7 +2090,7 @@ func (m *SyncTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SyncTaskMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 6)
 	if m.user_id != nil {
 		fields = append(fields, synctask.FieldUserID)
 	}
@@ -2142,9 +2105,6 @@ func (m *SyncTaskMutation) Fields() []string {
 	}
 	if m.ignore != nil {
 		fields = append(fields, synctask.FieldIgnore)
-	}
-	if m.deleted != nil {
-		fields = append(fields, synctask.FieldDeleted)
 	}
 	if m.create_time != nil {
 		fields = append(fields, synctask.FieldCreateTime)
@@ -2167,8 +2127,6 @@ func (m *SyncTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.RootDir()
 	case synctask.FieldIgnore:
 		return m.Ignore()
-	case synctask.FieldDeleted:
-		return m.Deleted()
 	case synctask.FieldCreateTime:
 		return m.CreateTime()
 	}
@@ -2190,8 +2148,6 @@ func (m *SyncTaskMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldRootDir(ctx)
 	case synctask.FieldIgnore:
 		return m.OldIgnore(ctx)
-	case synctask.FieldDeleted:
-		return m.OldDeleted(ctx)
 	case synctask.FieldCreateTime:
 		return m.OldCreateTime(ctx)
 	}
@@ -2237,13 +2193,6 @@ func (m *SyncTaskMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIgnore(v)
-		return nil
-	case synctask.FieldDeleted:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeleted(v)
 		return nil
 	case synctask.FieldCreateTime:
 		v, ok := value.(int64)
@@ -2330,9 +2279,6 @@ func (m *SyncTaskMutation) ResetField(name string) error {
 		return nil
 	case synctask.FieldIgnore:
 		m.ResetIgnore()
-		return nil
-	case synctask.FieldDeleted:
-		m.ResetDeleted()
 		return nil
 	case synctask.FieldCreateTime:
 		m.ResetCreateTime()

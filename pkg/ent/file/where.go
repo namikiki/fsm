@@ -108,7 +108,7 @@ func ParentDirID(v string) predicate.File {
 }
 
 // Level applies equality check predicate on the "level" field. It's identical to LevelEQ.
-func Level(v uint64) predicate.File {
+func Level(v int) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLevel), v))
 	})
@@ -546,21 +546,21 @@ func ParentDirIDContainsFold(v string) predicate.File {
 }
 
 // LevelEQ applies the EQ predicate on the "level" field.
-func LevelEQ(v uint64) predicate.File {
+func LevelEQ(v int) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLevel), v))
 	})
 }
 
 // LevelNEQ applies the NEQ predicate on the "level" field.
-func LevelNEQ(v uint64) predicate.File {
+func LevelNEQ(v int) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldLevel), v))
 	})
 }
 
 // LevelIn applies the In predicate on the "level" field.
-func LevelIn(vs ...uint64) predicate.File {
+func LevelIn(vs ...int) predicate.File {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -571,7 +571,7 @@ func LevelIn(vs ...uint64) predicate.File {
 }
 
 // LevelNotIn applies the NotIn predicate on the "level" field.
-func LevelNotIn(vs ...uint64) predicate.File {
+func LevelNotIn(vs ...int) predicate.File {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -582,28 +582,28 @@ func LevelNotIn(vs ...uint64) predicate.File {
 }
 
 // LevelGT applies the GT predicate on the "level" field.
-func LevelGT(v uint64) predicate.File {
+func LevelGT(v int) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldLevel), v))
 	})
 }
 
 // LevelGTE applies the GTE predicate on the "level" field.
-func LevelGTE(v uint64) predicate.File {
+func LevelGTE(v int) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldLevel), v))
 	})
 }
 
 // LevelLT applies the LT predicate on the "level" field.
-func LevelLT(v uint64) predicate.File {
+func LevelLT(v int) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldLevel), v))
 	})
 }
 
 // LevelLTE applies the LTE predicate on the "level" field.
-func LevelLTE(v uint64) predicate.File {
+func LevelLTE(v int) predicate.File {
 	return predicate.File(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLevel), v))
 	})

@@ -36,13 +36,5 @@ func (com *Common) VerifyUserToken() gin.HandlerFunc {
 		}
 
 		c.Request.Header.Set("userID", uid)
-
-		//user, err := com.user.GetByID(c, uid)
-		//if err != nil {
-		//	c.AbortWithStatusJSON(200, gin.H{
-		//		"msg": "请登陆后重试",
-		//	})
-		//	return
-		//}
 	}
 }

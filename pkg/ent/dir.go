@@ -22,7 +22,7 @@ type Dir struct {
 	// Dir holds the value of the "dir" field.
 	Dir string `json:"dir,omitempty"`
 	// Level holds the value of the "level" field.
-	Level uint64 `json:"level,omitempty"`
+	Level int `json:"level,omitempty"`
 	// Deleted holds the value of the "deleted" field.
 	Deleted bool `json:"deleted,omitempty"`
 	// CreateTime holds the value of the "create_time" field.
@@ -85,7 +85,7 @@ func (d *Dir) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field level", values[i])
 			} else if value.Valid {
-				d.Level = uint64(value.Int64)
+				d.Level = int(value.Int64)
 			}
 		case dir.FieldDeleted:
 			if value, ok := values[i].(*sql.NullBool); !ok {

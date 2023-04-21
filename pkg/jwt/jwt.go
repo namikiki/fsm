@@ -63,7 +63,6 @@ func (j *jwtService) Parse(ctx context.Context, tokenStr string) (string, error)
 	}
 
 	if claims, ok := token.Claims.(*customClaims); ok && token.Valid {
-
 		return claims.UserID, nil
 	}
 	return "", fmt.Errorf("%v", err)

@@ -24,7 +24,7 @@ type File struct {
 	// ParentDirID holds the value of the "parent_dir_id" field.
 	ParentDirID string `json:"parent_dir_id,omitempty"`
 	// Level holds the value of the "level" field.
-	Level uint64 `json:"level,omitempty"`
+	Level int `json:"level,omitempty"`
 	// Hash holds the value of the "hash" field.
 	Hash string `json:"hash,omitempty"`
 	// Size holds the value of the "size" field.
@@ -97,7 +97,7 @@ func (f *File) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field level", values[i])
 			} else if value.Valid {
-				f.Level = uint64(value.Int64)
+				f.Level = int(value.Int64)
 			}
 		case file.FieldHash:
 			if value, ok := values[i].(*sql.NullString); !ok {

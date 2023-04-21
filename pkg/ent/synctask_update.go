@@ -57,12 +57,6 @@ func (stu *SyncTaskUpdate) SetIgnore(b bool) *SyncTaskUpdate {
 	return stu
 }
 
-// SetDeleted sets the "deleted" field.
-func (stu *SyncTaskUpdate) SetDeleted(b bool) *SyncTaskUpdate {
-	stu.mutation.SetDeleted(b)
-	return stu
-}
-
 // SetCreateTime sets the "create_time" field.
 func (stu *SyncTaskUpdate) SetCreateTime(i int64) *SyncTaskUpdate {
 	stu.mutation.ResetCreateTime()
@@ -188,13 +182,6 @@ func (stu *SyncTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: synctask.FieldIgnore,
 		})
 	}
-	if value, ok := stu.mutation.Deleted(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: synctask.FieldDeleted,
-		})
-	}
 	if value, ok := stu.mutation.CreateTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt64,
@@ -255,12 +242,6 @@ func (stuo *SyncTaskUpdateOne) SetRootDir(s string) *SyncTaskUpdateOne {
 // SetIgnore sets the "ignore" field.
 func (stuo *SyncTaskUpdateOne) SetIgnore(b bool) *SyncTaskUpdateOne {
 	stuo.mutation.SetIgnore(b)
-	return stuo
-}
-
-// SetDeleted sets the "deleted" field.
-func (stuo *SyncTaskUpdateOne) SetDeleted(b bool) *SyncTaskUpdateOne {
-	stuo.mutation.SetDeleted(b)
 	return stuo
 }
 
@@ -417,13 +398,6 @@ func (stuo *SyncTaskUpdateOne) sqlSave(ctx context.Context) (_node *SyncTask, er
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: synctask.FieldIgnore,
-		})
-	}
-	if value, ok := stuo.mutation.Deleted(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: synctask.FieldDeleted,
 		})
 	}
 	if value, ok := stuo.mutation.CreateTime(); ok {

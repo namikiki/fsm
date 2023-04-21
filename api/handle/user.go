@@ -163,8 +163,14 @@ func (u *User) JWTLogin(c *gin.Context) {
 	}
 
 	getUser, err := u.User.GetUser(c, uid)
-	if err != nil || getUser.ID == "" {
-		c.JSON(http.StatusBadRequest, err.Error()+"或者用户不存在")
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if getUser.ID == "" {
+		c.JSON(http.StatusBadRequest, "或者用户不存在")
 		return
 	}
 

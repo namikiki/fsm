@@ -46,10 +46,6 @@ func (f *File) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, NewApiJsonResult(201, "创建文件成功", file))
-
-	//map[string]map[int]map[string]map[string]string
-	// 上传文件回调 文件上传客户端id  文件下载地址 文件夹同步ID， 文件id(防止文件重复) 文件名，复文件夹名，文件层级， 哈希值，修改时间  创建时间
-	// 文件上传 文件上传客户端id 同步id  文件名  层级  文件修改时间
 }
 
 func (f *File) Delete(c *gin.Context) {
