@@ -23,7 +23,6 @@
 - MySQL 8.3
 - GORM
 - Minio
-- WebSocket
 
 ## 服务端编译与启动
 1. Clone the repository:
