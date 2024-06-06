@@ -1,10 +1,10 @@
 [DataBase]
-Type     = "mysql"
-User     = "root"
-Password = "zylzyl233"
-Host     = "127.0.0.1"
+Type     = ""
+User     = ""
+Password = ""
+Host     = ""
 Port     = 3306
-BDName   = "testdatabase"
+BDName   = ""
 
 
 [Redis]

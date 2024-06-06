@@ -34,7 +34,12 @@
 3. 启动配置
    ```toml
    [DataBase]
-   DSN = "databse dsn" # 数据库连接
+   Type     = "" 
+   User     = ""
+   Password = ""
+   Host     = ""
+   Port     = 3306
+   BDName   = ""
 
    [Redis]
    Address = ""  # Redis 连接
