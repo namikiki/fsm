@@ -29,6 +29,7 @@ func NewJWTService(providedKey []byte, expiresAt time.Duration) Service {
 	return &jwtService{providedKey: providedKey, ExpiresAt: expiresAt}
 }
 
+// Gen 将传入UUID 存储至JWT内，返回生成的JWT
 func (j *jwtService) Gen(ctx context.Context, uuid string) (string, error) {
 	if uuid == "" {
 		return "", errors.New("uuid 不能为空")
@@ -53,6 +54,7 @@ func (j *jwtService) Gen(ctx context.Context, uuid string) (string, error) {
 	return signedString, nil
 }
 
+// Parse 解析传入的JWT，返回UUID
 func (j *jwtService) Parse(ctx context.Context, tokenStr string) (string, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &customClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return j.providedKey, nil

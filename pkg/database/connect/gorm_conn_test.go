@@ -1,6 +1,7 @@
 package connect
 
 import (
+	"fsm/pkg/config"
 	"log"
 	"testing"
 
@@ -8,9 +9,8 @@ import (
 )
 
 func TestT1(t *testing.T) {
-	connect := NewGormSQLiteConnect()
-
-	//res := make(map[string]string)
+	newConfig := config.NewConfig()
+	connect := NewGormSQLiteConnect(newConfig)
 
 	var res []ent.SyncTask
 

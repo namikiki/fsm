@@ -12,7 +12,12 @@ type Develop struct {
 }
 
 type DataBase struct {
-	DSN string
+	Type     string
+	User     string
+	Password string
+	Host     string
+	Port     int
+	BDName   string
 }
 
 type Redis struct {
