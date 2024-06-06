@@ -57,6 +57,7 @@ func (u *User) WebsocketConn(c *gin.Context) {
 	u.Sync.WebsocketConnChannel <- wsClient
 }
 
+// Register 用户注册
 func (u *User) Register(c *gin.Context) {
 	var ur req.UserRegister
 	if err := c.ShouldBind(&ur); err != nil {
@@ -89,6 +90,7 @@ func (u *User) Register(c *gin.Context) {
 
 }
 
+// Login 用户使用密码登录
 func (u *User) Login(c *gin.Context) {
 	//session := sessions.Default(c)
 	var userLogin req.UserLogin
@@ -123,6 +125,7 @@ func (u *User) Login(c *gin.Context) {
 	//session.Save()
 }
 
+// UpdatePassword 用户更新密码
 func (u *User) UpdatePassword(c *gin.Context) {
 	var up req.UpdatePassword
 	if err := c.ShouldBindJSON(&up); err != nil {
@@ -150,11 +153,11 @@ func (u *User) Delete(c *gin.Context) {
 		}})
 }
 
-func (u *User) Update(c *gin.Context) {
+func (u *User) UpdateProfile(c *gin.Context) {
 
 }
 
-func (u *User) JWTLogin(c *gin.Context) {
+func (u *User) JWTAuthenticate(c *gin.Context) {
 
 	uid, err := u.JWT.Parse(c, c.GetHeader("jwt"))
 	if err != nil {

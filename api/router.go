@@ -18,7 +18,6 @@ func AddRoutes(router *gin.Engine, user handle.User, file handle.File, dir handl
 		c.JSON(http.StatusNotFound, gin.H{"message": "Not Found"})
 	})
 
-	router.POST("/jwt", user.JWTLogin)
 	app := router.Group("")
 	app.Use(common.VerifyUserToken())
 
@@ -31,12 +30,12 @@ func AddRoutes(router *gin.Engine, user handle.User, file handle.File, dir handl
 	}
 
 	{ //user
-		app.GET("/websocket/connect", user.WebsocketConn)
-
 		router.POST("/login", user.Login)
 		router.POST("/register", user.Register)
-		app.DELETE("/user", user.Delete)
+		router.POST("/jwt", user.JWTAuthenticate)
 
+		app.DELETE("/user", user.Delete)
+		app.GET("/websocket/connect", user.WebsocketConn)
 	}
 
 	{ // file

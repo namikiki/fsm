@@ -21,9 +21,9 @@
 - Gin
 - Redis 6.2
 - MySQL 8.3
-- Minio 
+- GORM
+- Minio
 - WebSocket
-- Ent
 
 ## 服务端编译与启动
 1. Clone the repository:
