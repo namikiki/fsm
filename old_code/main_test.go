@@ -1,4 +1,4 @@
-package main
+package old_code
 
 import (
 	"io"
@@ -17,7 +17,6 @@ func maina() {
 	r := gin.Default()
 
 	r.Run(":8000")
-
 
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("sessionid", store))
