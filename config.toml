@@ -1,22 +1,19 @@
-[DataBase] #数据库
-Type     = ""
-User     = ""
-Password = ""
-Host     = ""
+[DataBase]
+Type     = "mysql"
+User     = "root"
+Password = "zylzyl233"
+Host     = "127.0.0.1"
 Port     = 3306
-BDName   = ""
+BDName   = "testdatabase"
 
 
 [Redis]
-Address = ""  # Redis 连接
-Password = "" # 没有密码则为空
+Address = "localhost:6379"
+Password = ""
 
 
 [Minio]
-Endpoint        = "play.min.io" # Minio #连接地址
-AccessKeyID     = "Q3AM3UQ867A43P2F"
-SecretAccessKey = "zuf+tfteSlswRLbZam1KYY3TG"
-UseSSL          = true #是否启用SSL
-
-[Develop]
-DevMod = true  # 是否启用开发模式
+Endpoint        = "localhost:9001"
+AccessKeyID     = "qzMJRjDS3bf80pxtlcwh"
+SecretAccessKey = "Efyn8NrsTzyX6l2mfHvasMP3bQvR8RZxgmLjPl8v"
+UseSSL          = false
