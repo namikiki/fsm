@@ -7,14 +7,16 @@ import (
 )
 
 type UserController struct {
-	userService *services.UserService
-	minioServer *services.MinioService
+	userService *services.UserService  // 用户服务
+	minioServer *services.MinioService // MinIO 服务
 }
 
+// NewUserController 创建一个新的 UserController 实例
 func NewUserController(userService *services.UserService) *UserController {
 	return &UserController{userService: userService}
 }
 
+// Register 处理用户注册请求
 func (ctrl *UserController) Register(c *gin.Context) {
 	var ur services.UserRegisterService
 
@@ -46,9 +48,9 @@ func (ctrl *UserController) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, NewApiResult(100, "注册成功", nil))
 }
 
+// Login 处理用户登录请求
 func (ctrl *UserController) Login(c *gin.Context) {
 	var ul services.UserLoginService
-
 	if err := c.ShouldBind(&ul); err != nil {
 		c.JSON(http.StatusOK, NewErrorApiResult(110, "解析请求数据失败"))
 		return
@@ -69,7 +71,7 @@ func (ctrl *UserController) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, NewApiResult(100, "登陆成功", nil))
 }
 
-// UpdatePassword 用户更新密码
+// UpdatePassword 处理用户更新密码请求
 func (ctrl *UserController) UpdatePassword(c *gin.Context) {
 	var up services.UpdatePasswordService
 

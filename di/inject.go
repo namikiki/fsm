@@ -19,6 +19,7 @@ import (
 	"time"
 )
 
+// RepositoriesModule 定义了存储库模块，提供 StorageRepository 和 UserRepository
 var RepositoriesModule = fx.Module("RepositoriesModule",
 	fx.Provide(
 		repositories.NewStorageRepository,
@@ -26,6 +27,7 @@ var RepositoriesModule = fx.Module("RepositoriesModule",
 	),
 )
 
+// PKGModule 定义了基本包模块，提供 Config、Redis、Minio 连接和 Gorm 连接
 var PKGModule = fx.Module("pkg",
 	fx.Provide(
 		configs.NewConfig,
@@ -35,24 +37,29 @@ var PKGModule = fx.Module("pkg",
 	),
 )
 
+// ServiceModule 定义了服务模块，提供各种服务
 var ServiceModule = fx.Module("service",
 	fx.Provide(
 		JWTCONFIG,
 		services.NewUserService,
-		services.NewStorageService,
+		services.NewFolderService,
+		services.NewFileService,
 		services.NewJWTService,
 		services.NewWebSocketService,
 		services.NewMinioService,
 	),
 )
 
+// ControllersModule 定义了控制器模块，提供各种控制器
 var ControllersModule = fx.Module("controllers",
-	fx.Provide(controllers.NewFSController,
+	fx.Provide(controllers.NewFolderController,
+		controllers.NewFileController,
 		controllers.NewUserController,
 		controllers.NewWebsocketController,
 	),
 )
 
+// RouteModule 定义了路由模块，提供认证中间件和路由初始化
 var RouteModule = fx.Module("route",
 	fx.Provide(
 		middlewares.NewAuth,
@@ -66,6 +73,7 @@ type Params struct {
 	WS     *services.WebSocketService
 }
 
+// Hooks 定义应用的生命周期钩子
 func Hooks(lifecycle fx.Lifecycle, p Params) {
 	lifecycle.Append(
 		fx.Hook{
@@ -85,6 +93,7 @@ func Hooks(lifecycle fx.Lifecycle, p Params) {
 	)
 }
 
+// JWTCONFIG 配置 JWT，返回密钥、过期时间和哈希函数
 func JWTCONFIG() ([]byte, time.Duration, hash.Hash) {
 	return []byte("zyl"), 24 * time.Hour, md5.New()
 }
