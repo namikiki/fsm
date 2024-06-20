@@ -32,8 +32,6 @@ func NewFolderService(minioService *MinioService, redis *redis.Client, storageRe
 	return &FolderService{storageRepo, minioService, redis}
 }
 
-//folder
-
 // ListFolder 列出用户的文件夹
 func (f *FolderService) ListFolder(c *gin.Context, userID string) ([]models.Folder, error) {
 	return f.storageRepo.ListFolder(c, userID)

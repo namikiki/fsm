@@ -14,8 +14,8 @@ func NewRedis(config *types.Config) *redis.Client {
 		DB:       0,                     // Redis 数据库编号，默认为0
 	})
 
-	if err := client.Ping(context.Background()); err == nil {
-		panic("redis connect fail")
+	if err := client.Ping(context.Background()).Err(); err != nil {
+		panic("redis 连接错误:" + err.Error())
 	}
 
 	return client

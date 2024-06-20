@@ -38,5 +38,6 @@ func (auth *Auth) VerifyUserToken() gin.HandlerFunc {
 		}
 
 		c.Request.Header.Set("userID", uid)
+		c.Next()
 	}
 }

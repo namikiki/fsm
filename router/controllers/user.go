@@ -3,7 +3,6 @@ package controllers
 import (
 	"fsm/services"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type UserController struct {
@@ -22,8 +21,7 @@ func (ctrl *UserController) Register(c *gin.Context) {
 
 	//解析数据
 	if err := c.ShouldBind(&ur); err != nil {
-		c.JSON(http.StatusOK, NewErrorApiResult(110, "解析请求数据失败"))
-		return
+		ErrorResponse(c, 1, "解析请求数据失败", err)
 	}
 
 	//todo 校验数据
@@ -35,25 +33,21 @@ func (ctrl *UserController) Register(c *gin.Context) {
 	//数据库记录用户信息
 	user, err := ctrl.userService.Register(c, ur)
 	if err != nil {
-		c.JSON(http.StatusOK, NewErrorApiResult(130, "注册用户失败"))
-		return
+		ErrorResponse(c, 1, "注册用户失败", err)
 	}
 
 	//初始化名字为为用户ID的MINIO 存储桶
 	if err := ctrl.minioServer.InitUserMinio(c, user); err != nil {
-		c.JSON(http.StatusOK, NewErrorApiResult(140, "初始化用户存储失败"))
-		return
+		ErrorResponse(c, 1, "初始化用户存储失败", err)
 	}
-
-	c.JSON(http.StatusOK, NewApiResult(100, "注册成功", nil))
+	SuccessResponse(c, 1, "用户注册成功", nil)
 }
 
 // Login 处理用户登录请求
 func (ctrl *UserController) Login(c *gin.Context) {
 	var ul services.UserLoginService
 	if err := c.ShouldBind(&ul); err != nil {
-		c.JSON(http.StatusOK, NewErrorApiResult(110, "解析请求数据失败"))
-		return
+		ErrorResponse(c, 1, "解析请求数据失败", err)
 	}
 
 	//todo 数据校验
@@ -62,13 +56,23 @@ func (ctrl *UserController) Login(c *gin.Context) {
 	//	return
 	//}
 
-	token, err := ctrl.userService.Login(c, ul)
+	attempts, err := ctrl.userService.CheckLoginAttempts(c, ul.Email)
 	if err != nil {
-		c.JSON(http.StatusOK, NewErrorApiResult(120, "登录失败"))
+		ErrorResponse(c, 1, "登录失败", err)
 	}
 
-	c.Header("Authorization", "Bearer "+token)
-	c.JSON(http.StatusOK, NewApiResult(100, "登陆成功", nil))
+	if !attempts {
+		ErrorResponse(c, 1, "登录重试次数过多,请稍后重试", err)
+	}
+
+	token, err := ctrl.userService.Login(c, ul)
+	if err != nil {
+		ctrl.userService.IncrementLoginAttempts(c, ul.Email)
+		ErrorResponse(c, 1, "登录失败", err)
+	}
+
+	ctrl.userService.ResetLoginAttempts(c, ul.Email)
+	SuccessResponse(c, 1, "用户登录成功", token)
 }
 
 // UpdatePassword 处理用户更新密码请求
@@ -76,17 +80,19 @@ func (ctrl *UserController) UpdatePassword(c *gin.Context) {
 	var up services.UpdatePasswordService
 
 	if err := c.ShouldBindJSON(&up); err != nil {
-		c.JSON(http.StatusOK, NewErrorApiResult(110, "解析请求数据失败"))
-		return
+		ErrorResponse(c, 1, "解析请求数据失败", err)
 	}
 
 	if err := ctrl.userService.UpdatePassword(c, up); err != nil {
-		c.JSON(http.StatusOK, NewErrorApiResult(120, "密码更新失败"))
-		return
+		ErrorResponse(c, 1, "密码更新失败", err)
 	}
 
 	//todo jwt失效
-	c.JSON(http.StatusOK, NewApiResult(201, "密码更新成功", nil))
+	SuccessResponse(c, 1, "密码更新成功", nil)
+}
+
+func (ctrl *UserController) DeleteUser(c *gin.Context) {
+
 }
 
 //func (u *User) UpdateProfile(c *gin.Context) {

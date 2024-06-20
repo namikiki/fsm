@@ -8,6 +8,12 @@ import (
 	"fsm/pkg/utils"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
+	"time"
+)
+
+const (
+	LoginAttemptLimit  = 5
+	LoginAttemptWindow = 15 * time.Minute
 )
 
 // UserLoginService  用户登录服务
@@ -128,4 +134,37 @@ func (s *UserService) UpdatePassword(ctx context.Context, ups UpdatePasswordServ
 // GetUser 根据用户ID获取用户信息
 func (s *UserService) GetUser(ctx context.Context, userID string) (*models.User, error) {
 	return s.userRepo.GetByID(ctx, userID)
+}
+
+// CheckLoginAttempts 检查用户登录尝试次数
+func (s *UserService) CheckLoginAttempts(ctx context.Context, username string) (bool, error) {
+	key := "login_attempts:" + username
+	attempts, err := s.redis.Get(ctx, key).Int()
+
+	if err != nil && !errors.Is(err, redis.Nil) {
+		return false, err
+	}
+
+	if attempts >= LoginAttemptLimit {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+// IncrementLoginAttempts 增加用户尝试次数
+func (s *UserService) IncrementLoginAttempts(ctx context.Context, username string) error {
+	key := "login_attempts:" + username
+	_, err := s.redis.Incr(ctx, key).Result()
+	if err != nil {
+		return err
+	}
+	s.redis.Expire(ctx, key, LoginAttemptWindow)
+	return nil
+}
+
+// ResetLoginAttempts  重置用户登录尝试次数
+func (s *UserService) ResetLoginAttempts(ctx context.Context, username string) error {
+	key := "login_attempts:" + username
+	return s.redis.Del(ctx, key).Err()
 }

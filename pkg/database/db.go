@@ -21,7 +21,7 @@ func NewGormConnect(config *types.Config) *gorm.DB {
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		panic("数据库 连接错误:" + err.Error())
 	}
 
 	//db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
@@ -33,7 +33,6 @@ func NewGormConnect(config *types.Config) *gorm.DB {
 	//if err != nil {
 	//	panic(err)
 	//}
-	//if err := db.AutoMigrate(&models.User{}, &ent.SyncTask{}, &ent.Dir{}, &ent.File{}); err != nil {
 	if err := db.AutoMigrate(&models.User{}, &models.Folder{}, &models.File{}); err != nil {
 		panic(err)
 	}

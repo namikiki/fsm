@@ -27,8 +27,7 @@ func (w *WebsocketController) WebsocketConn(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		// 如果升级失败，返回错误信息
-		c.AbortWithStatusJSON(1003, NewErrorApiResult(501, err.Error()))
-		return
+		ErrorResponse(c, 1, "WebSocket 连接失败", err)
 	}
 
 	// 创建一个新的 WebSocket 客户端

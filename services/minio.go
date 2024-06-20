@@ -28,8 +28,6 @@ func (m *MinioService) InitUserMinio(ctx context.Context, user *models.User) err
 	return nil
 }
 
-// FileCreate
-
 // FileCreate 在 MinIO 中创建文件
 func (m *MinioService) FileCreate(c *gin.Context, bucketName string, objectName string) (*minio.UploadInfo, error) {
 
