@@ -12,19 +12,18 @@ type Response struct {
 	Error string      `json:"error,omitempty"`
 }
 
-// SuccessResponse 创建一个API返回结果对象
+// SuccessResponse 返回处理成功消息
 func SuccessResponse(c *gin.Context, code int, msg string, data interface{}) {
-	c.JSON(http.StatusOK, Response{
+	c.AbortWithStatusJSON(http.StatusOK, Response{
 		Code: code,
 		Msg:  msg,
 		Data: data,
 	})
-	return
 }
 
-// ErrorResponse 创建一个API返回错误结果对象
+// ErrorResponse  返回处理失败消息
 func ErrorResponse(c *gin.Context, code int, msg string, err error) {
-	c.JSON(http.StatusOK, Response{
+	c.AbortWithStatusJSON(http.StatusOK, Response{
 		Code:  code,
 		Msg:   msg,
 		Error: err.Error(),

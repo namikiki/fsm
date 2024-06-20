@@ -17,10 +17,10 @@
 - 同步过滤: 用户可以过滤不需要同步的文件或者文件夹
 
 ## 技术栈与运行需求
-- Go 1.21
+- Go    >= 1.21
+- Redis >= 6.2
+- MySQL >= 8.3
 - Gin
-- Redis 6.2
-- MySQL 8.3
 - GORM
 - Minio
 
@@ -47,8 +47,8 @@
 
    [Minio]
    Endpoint        = "play.min.io" # Minio #连接地址
-   AccessKeyID     = "Q3AM3UQ867SPQQA43P2F"  
-   SecretAccessKey = "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
+   AccessKeyID     = "Q3AM3P2F"  
+   SecretAccessKey = "zuf+LbZam1KYY3TG"
    UseSSL          = true #是否启用SSL
    
    [Develop]
